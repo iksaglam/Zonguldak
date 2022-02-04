@@ -1,7 +1,7 @@
 # Winter course in analysis of RADseq data for molecular ecology and population genetics
 
 
-# Working without a reference genome: RAD loci discovery and de-novo RAD-contig reference construction
+## Working without a reference genome: RAD loci discovery and de-novo RAD-contig reference construction
 ## stitle
 ### sstitle
 
