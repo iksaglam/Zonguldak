@@ -231,7 +231,7 @@ scripts=/egitim/iksaglam/scripts
 perl $scripts/IdentifyLoci3.pl U_OVT.novo > U_OVT_v2.loci
 ```  
 ```
-tail U_OVT.loci | less 
+tail U_OVT_v2.loci | less 
 ```    
 ```
 >R048758{U_OVTD08;94045;3|U_OVTE08;32552;5|U_OVTE09;110666;2|U_OVTE11;17694;7}
