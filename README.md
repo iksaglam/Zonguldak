@@ -245,9 +245,9 @@ AAATGTCAATAAATAAAAGATGTGACTCATAACGGAATCTGGGGACTACTGAAATGGGTGAACTCCAGTAATTTTTTTGT
 >R048762{U_OVTD08;30892;7|U_OVTE08;79860;3|U_OVTE09;69063;4|U_OVTE11;116063;2}
 TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
-As you can see, since we allowed more variability within each RAD loci the total number of loci discovered dropped from 63,751 to 48,762. Play around with some of the other parameters to see how they imfluence your results.
+Since we allowed more variability within each RAD loci the total number of loci dropped from 63,751 to 48,762. Play around with some of the other parameters to see how they influence your results.
   
-Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and comvert our loci file into a clean looking fasta file with our discovered loci.
+Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and comvert our loci file into a clean looking fasta file.
   
 ```
 scripts=/egitim/iksaglam/scripts
