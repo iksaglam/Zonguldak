@@ -147,7 +147,6 @@ Option | Meaning |
 -SNP_pval 1e-12 | Remove sites with a pvalue larger than 1e-12  |
 -postCutoff 0.85 | Call genotypes with a posterior probability of over 85%  |
 
-Now let us create a directory for carrying out all our anal
 Recalling also our choice for data filtering and that we would like to output files in various formats, our final command line would look something like this:
 
 ```
@@ -158,6 +157,11 @@ mInd=$((${nInd}/2))
 
 angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
 ```
+An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_PCA_Angsd.sh) and can be executed as follows:
+```
+sbatch get_genos.sh artv /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+```
+
 Take a look at some of the resulting files using less. Can you makes sense of them?
 ```
 zless artv.mafs.gz 
