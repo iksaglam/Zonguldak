@@ -156,12 +156,16 @@ ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 nInd=$(wc -l artv.bamlist | awk '{print $1}')
 mInd=$((${nInd}/2))
 
-angsd -bam artv.bamlist -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
+angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
 ```
-
-
-
-
+Take a look at some of the resulting files using less. Can you makes sense of them?
+```
+zless artv.mafs.gz 
+zless artv.beagle.gz  
+zless artv.geno.gz  
+zless artv.vcf.gz
+less artv.tped
+```
 
 
 
