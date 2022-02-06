@@ -97,11 +97,11 @@ We can also get alignment statistics using samtools flagstat
 ```
 samtools flagstat A_CAMD04_sorted_proper_rmdup.bam
 ```
-
-Instead of aligning each paired read one by one normally we would want to do this in bulk. You can find an example shell script that can do this [here] (https://github.com/iksaglam/Zonguldak/blob/main/Scripts/align_pe_reads.sh). We can use this script to execute the above pipeline and get alignment files for all individuals `artv.list` using the following command.
+#### Running in parallel or bulk:
+Instead of aligning each paired read one by one normally we would want to do this in bulk. You can find an example shell script that can do this [here] (https://github.com/iksaglam/Zonguldak/blob/main/Scripts/align_pe_reads.sh). We can use this script to execute the above pipeline and get alignment files for all individuals `artv.list` simultaneously using the following command.
 
 ```
-sh align_pe_reads.sh artv.list
+sbatch align_pe_reads.sh artv.list /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 ```
 
 Now that we have 60 BAM files at low/medium depth we can create a bamlist for the data set as a whole and for each population to use in downstream analysis in a new directory called `analyses`.
