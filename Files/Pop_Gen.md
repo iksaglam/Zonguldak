@@ -4,7 +4,7 @@ In this tutorial we will be using 60 samples from 5 populations of *Phonochorion
 <br/><br/>
 
 ![Figure 1](https://github.com/iksaglam/Zonguldak/blob/main/Files/1-s2.0-S1055790319302428-gr1_lrg.jpg)
-**Figure 1.** Distribution of *Phonochorion artvinensis* and *Ph. uvarovi* populations within the Eastern Blacksea Region of Turkey. *Ph. artvinensis*: 1=Erikli Köyü; 4=Kama Köyü; 6=Çamlık Köyü; 10=Çaymakçur Yaylası; 12=Napopen Yaylası. *Ph. uvarovi*: 2=Boğalı Köy, 3=Anzer Yaylası, 5=Ovit Geçidi, 7=Çağrankaya Yaylası, 8=Alt Çat, 9=Kavron Yaylası, 11=Sırt Yaylası.
+**Figure 1.** Distribution of *Phonochorion artvinensis* and *Ph. uvarovi* populations within the Eastern Black Sea Region of Turkey. *Ph. artvinensis*: 1=Erikli Köyü; 4=Kama Köyü; 6=Çamlık Köyü; 10=Çaymakçur Yaylası; 12=Napopen Yaylası. *Ph. uvarovi*: 2=Boğalı Köy, 3=Anzer Yaylası, 5=Ovit Geçidi, 7=Çağrankaya Yaylası, 8=Alt Çat, 9=Kavron Yaylası, 11=Sırt Yaylası.
 <br/><br/>
 
 The data for this practical can be found here `/egitim/iksaglam/data/artvinensis` and the denovo partial reference genome which we will be using for mapping and variant calling can be found here `/egitim/iksaglam/ref`. In addition, example shell scripts for all analysis and R scripts for manipulating and plotting results can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts). Please be aware that shell and R scripts provided here are for illustrative purposes only and if you wish to use them on your own data/project they should be modified accordingly. 
