@@ -309,7 +309,7 @@ Ideally we would of course want to cycle through all populations in parallel. An
 ```Bash
 sbatch get_sfs.sh pop.list
 ```
-[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
+[Topics](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Nucleotive diversity and neutrality
 
