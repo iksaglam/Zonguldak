@@ -12,7 +12,7 @@ The data for this practical can be found here `/egitim/iksaglam/data/artvinensis
 Our goal here is to show how to go from raw fastq files to alignment files (BAMs) and from there to basic summary statistics and analysis in population genetics.
 Specifically we will be covering the following topics:
 
-- Sequence alignment, cleanup and indexing
+- [Sequence alignment, cleanup and indexing](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#sequence-alignment-cleanup-and-indexing)
 - Genotyping and variant calling
 - Population structure (PCA)
 - Admixture
