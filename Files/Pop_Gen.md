@@ -178,7 +178,7 @@ less artv.tped
 
 Now that we have calculated our genotype likelihoods and probabilities we can use these to perform a principal component analyses (PCA) summarizing genetic structure between populations, taking genotype uncertainty into account. To this end we will first estimate the covariance matrix between individuals based on genotype likelihoods using PCangsd and then decompose this matrix into principle components using R and plot the results. 
 
-`PCangsd` takes as input genotype likelihoods in `Beagle format` so to calculate our covarinace matrix we will be using the `artv.beagle.gz` file created earlier.
+`PCangsd` takes as input genotype likelihoods in `Beagle` format so to calculate our covarinace matrix we will be using the `artv.beagle.gz` file created earlier.
 
 ```Bash
 mkdir results_pca
