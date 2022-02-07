@@ -212,9 +212,9 @@ sbatch get_PCA_Angsd.sh artv
 
 ## Admixture
 
-To determine ancestry (i.e. admixture) between populations we will use NGSadmix together with R for plotting the results. Like PCangsd NGSadmix requires a genotype likelihood file in beagle format. We will conduct an admixture analysis for K=2 to K=5 clusters and also run 10 replicates for each K value. These replicate runs will allow us to use Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)) to determine the most likely K based on the log likelihood of each K.
+To determine ancestry (i.e. admixture) between populations we will use `NGSadmix` together with R for plotting the results. Like `PCangsd` `NGSadmix` requires a genotype likelihood file in `beagle` format. We will conduct an admixture analysis for K=2 to K=5 clusters and also run 10 replicates for each K value. These replicate runs will allow us to use Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)) to determine the most likely K based on the log likelihood of each K.
 
-To run the analysis we will input our previously generated genotype likelihood file `artv.beagle.gz` into NGSadmix and loop over each different K values 10 times.
+To run the analysis we will input our previously generated genotype likelihood file `artv.beagle.gz` into `NGSadmix` and loop over each different K values 10 times.
 
 ```Bash
 mkdir results_admix
@@ -237,7 +237,7 @@ An example shell script for running the analysis on the cluster and in parallel 
 sbatch get_admix.sh artv 5
 ```
 
-Next, we will take the likelihood value from each run of NGSadmix and prepare a Clumpak file to determine the most like K based on Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)).
+Next, we will take the likelihood value from each run of `NGSadmix` and prepare a [Clumpak](http://clumpak.tau.ac.il/bestK.html) file to determine the most like K based on Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)).
 ```Bash
 cd results_admix
 (for log in `ls *.log`; do grep -Po 'like=\K[^ ]+' $log; done) > logfile
