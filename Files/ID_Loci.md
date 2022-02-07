@@ -281,4 +281,4 @@ ATCTTCACTTCAACATTCTAGATGCCTGGAACAATCAATGGCAGGAACAAATTTGCCTGACACATCGCCACTCCTTGGGA
 >R063755
 TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
-[Top]https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#working-without-a-reference-genome-rad-loci-discovery
+[Top](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#working-without-a-reference-genome-rad-loci-discovery)
