@@ -298,24 +298,75 @@ Ideally we would of course want to cycle through all populations in parallel. An
 sbatch get_sfs.sh pop.list
 ```
 
+## Nucleotive diversity and neutrality
+
+Once we have computed the allele frequency posterior probabilities and the SFS for each populations we can use these to calculate nucleotide diversity and related statistics for each population in ANGSD without againg relying on called genotypes.
+
+Again it is better to calculate such statistics for each population separately. Calculation of such statistics for one population can be achieved using the following pipeline.
+```Bash
+mkdir results_diversity
+realSFS saf2theta results_sfs/CAM.saf.idx -sfs results_sfs/CAM.sfs -outname results_diversity/CAM
+thetaStat do_stat results_diversity/CAM.thetas.idx
+```
+
+This will result in an output file named `CAM.thetas.idx.pestPG`. We can view this file using less.
+```Bash
+less -S CAM.thetas.idx.pestPG
+```
+
+The output will contain  5 different estimators of theta: Watterson, Pi, FuLi, fayH, L. and we  5 different neutrality test statistics: Tajima's D, Fu&Li F's, Fu&Li's D, Fay's H, Zeng's E. The final column is the effetive number of sites with data for each RAD contig.
+
+```
+#(indexStart,indexStop)(firstPos_withData,lastPos_withData)(WinStart,WinStop)   Chr     WinCenter       tW      tP      tF      tH      tL      Tajima  fuf     fud     fayh    zeng    nSites
+(0,344)(1,345)(0,345)   R000002 172     2.268923        1.798771        3.482656        0.477495        1.138133        -0.808122       -0.936711       -0.775660       0.630364        -0.571185       344
+(0,298)(1,308)(0,308)   R000004 154     14.467825       17.316357       4.444719        13.537845       15.427101       0.899640        1.510947        1.377009        0.315925        0.091875        298
+(0,355)(1,356)(0,356)   R000006 178     4.619073        5.465138        2.793336        7.232932        6.349035        0.781203        0.854562        0.676516        -0.441681       0.477114        355
+(0,424)(1,451)(0,451)   R000007 225     4.602208        4.815590        3.410900        5.577429        5.196509        0.197677        0.450634        0.442741        -0.190996       0.164437        424
+(0,287)(1,290)(0,290)   R000009 145     4.320633        5.315162        2.142283        4.696980        5.006071        0.975362        1.071780        0.851829        0.164373        0.200529        287
+(0,372)(1,373)(0,373)   R000010 186     4.796857        4.255665        6.827616        2.108999        3.182332        -0.482878       -0.797435       -0.729749       0.517732        -0.430593       372
+(0,363)(1,364)(0,364)   R000011 182     3.576046        3.913829        2.765189        2.245555        3.079692        0.392182        0.451592        0.368236        0.528321        -0.171232       363
+(0,371)(1,391)(0,391)   R000012 195     4.542996        4.553729        4.873980        3.009494        3.781611        0.010060        -0.103836       -0.124303       0.391854        -0.213097       371
+.
+.
+.
+```
+
+Alternatively if you have full genome data you might want to do a sliding window analysis by adding -win/-step arguments to the last command `thetaStat`. In this case the final column above (nSites) would be the effetive number of sites with data in the window.
+```
+thetaStat do_stat results_diversity/CAM.thetas.idx -win 50000 -step 10000
+```
+
+As always we would like to run the analysis in paralell for all populations.  An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+```Bash
+sbatch get_diversity.sh pop.list
+```
+
+If we wish we can also plot or make a table comparing our results between populations for selected statistics. To do this we would first need to extract the relative columns from each population and write them into a new file. For example let us say we want to compare and plot ThetaW, ThetaPi and Tajima's D estimates between populations. To create such a spreadsheet we could do something like this:
+```Bash
+for i in `cat ../pop.list`; do cut -f2,4,5,9,14 ${i}.thetas.idx.pestPG | sed 1d | sed "s/^/$i\t/" >> all_pops_diversity.tsv ; done
+sed -i 1i'Pop\tRADloci\ttW\ttP\tTajD\tNsites’ all_pops_diversity.tsv
+```
+Next we can use a simple R script ([here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts)) to plot our results and create a summary table.
+```Bash
+scripts=/egitim/iksaglam/scripts
+Rscript $scripts/plotDiv.R all_pops_diversity.tsv
+```
+
+## Population genetic differentiation
+
+Secondly, we need to estimate a multi-dimensional SFS, for instance the joint SFS between 2 populations (2D). This can be used for making inferences on their divergence process (time, migration rate and so on). However, here we are interested in estimating the 2D-SFS as prior information for our FST/PBS.
+
+An important issue when doing this is to be sure that we are comparing the exactly same corresponding sites between populations. ANGSD does that automatically and considers only a set of overlapping sites.
+
+We are performing PBS assuming NAM (Native Americans) being the targeted population, and AFR and EUR as reference populations. All 2D-SFS between such populations and NAM are computed with:
+
+Here we are going to calculate allele frequency differentiation using the PBS (population branch statistic) and FST metrics. Again, we can achieve this by avoid genotype calling using ANGSD directly from the sample allele frequencies likelihoods. Note that we are using the 2D-SFS calculated above as prior information for the joint allele frequency probabilities at each site. As an illustration, PEL is our target population, while LWK and TSI are reference populations.
+
+Specifically, we are computing a slinding windows scan, with windows of 50kbp and a step of 10kbp. This can be achieved using the following commands. This first command computes per-site FST indexes:
 
 
 
-We cycle across all populations:
 
-
-
-
-for each site and from there and estimate of the SFS is computed.
-
-These steps can be accomplished in ANGSD using -doSaf 1/2 options and the program realSFS.
-
-We use ANGSD to estimate SFS using on example dataset, using the methods described here. Details on the implementation can be found here. Briefly, from sequencing data one computes genotype likelihoods (as previously described). From these quantities ANGSD computes posterior probabilities of Sample Allele Frequency (SAF), for each site. Finally, an estimate of the SFS is computed.
-
-
-
-
-our list of indiviuals 
 
 ### sstitle
 
