@@ -221,7 +221,7 @@ TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
 We can see that we have discovered 63,751 individual RAD loci.
   
-Now let us change `$max_alignment_score` to `60` (meaning we are allowing two SNPs within each RAD loci) and redo the analaysis
+Now let us change `$max_alignment_score` to `60` (meaning we are allowing two SNPs within each RAD loci) and redo the analysis.
   
 ```Bash
 scripts=/egitim/iksaglam/scripts
