@@ -10,7 +10,8 @@ In this tutorial we will be using 60 samples from 5 populations of *Phonochorion
 The data for this practical can be found here `/egitim/iksaglam/data/artvinensis` and the denovo partial reference genome which we will be using for mapping and variant calling can be found here `/egitim/iksaglam/ref`. In addition, example shell scripts for all analysis and R scripts for manipulating and plotting results can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts). Please be aware that shell and R scripts provided here are for illustrative purposes only and if you wish to use them on your own data/project they should be modified accordingly. 
 
 Our goal here is to show how to go from raw fastq files to alignment files (BAMs) and from there to basic summary statistics and analysis in population genetics.
-Specifically we will be covering the following topics:
+
+#### Topics to be covered:
 
 - [Sequence alignment, cleanup and indexing](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#sequence-alignment-cleanup-and-indexing)
 - [Genotyping and variant calling](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#genotyping-and-variant-calling)
@@ -112,6 +113,7 @@ cd analyses
 ls /egitim/iksaglam/alignments/*.sorted_proper_rmdup.bam > artv.bamlist
 for i in `cat pop.list`; do grep $i artv.bamlist > ${i}.bamlist; done
 ```
+[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Genotyping and variant calling
 
@@ -170,6 +172,7 @@ zless artv.geno.gz
 zless artv.vcf.gz
 less artv.tped
 ```
+[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Population structure (PCA)
 
@@ -205,6 +208,7 @@ An example shell script for running the analysis on the cluster can be found [he
 ```Bash
 sbatch get_PCA_Angsd.sh artv
 ```
+[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Admixture
 
@@ -257,6 +261,7 @@ Rscript $scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
 
 Download the resulting pdf file onto your local computer and view!
 
+[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## The site frequency spectrum (SFS)
 
@@ -304,6 +309,7 @@ Ideally we would of course want to cycle through all populations in parallel. An
 ```Bash
 sbatch get_sfs.sh pop.list
 ```
+[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Nucleotive diversity and neutrality
 
@@ -360,6 +366,7 @@ Rscript $scripts/plotDiv.R all_pops_diversity.tsv
 ```
 ![Tajima's D](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_TajimaD.png)
 
+[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Population genetic differentiation
 Here we are going to estimate allele frequency differentiation between populations using the Fst metrics. We can achieve this in ANGSD without relying on genotype calls  by directly working with the sample allele frequencies likelihoods we calculated before (i.e. `saf` files). However to estimate Fst values between populations we also need to estimate the joint SFS between any two populations (2D-SFS) which will serve as prior information for estimating Fst values. As an example we will calculate the Fst between the CAM and CAY populations.
@@ -426,3 +433,4 @@ Rscript $scripts/plotFst.R all_pops_fst.tsv
 ```
 ![Fst](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_Fst.png)
 
+[return to top](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#a-tutorial-for-some-basic-population-genetic-analyses-using-radseq-data)
