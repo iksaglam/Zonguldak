@@ -14,11 +14,11 @@ Specifically we will be covering the following topics:
 
 - [Sequence alignment, cleanup and indexing](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#sequence-alignment-cleanup-and-indexing)
 - [Genotyping and variant calling](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#genotyping-and-variant-calling)
-- [Population structure (PCA)](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#population-structure-(PCA))
-- Admixture
-- Site frequency spectrum
-- Nucleotive diversity and neutrality
-- Population genetic differentiation
+- [Population structure (PCA)](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#population-structure-pca)
+- [Admixture](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#admixture)
+- [The Site frequency spectrum](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#the-site-frequency-spectrum-sfs)
+- [Nucleotive diversity and neutrality](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#nucleotive-diversity-and-neutrality)
+- [Population genetic differentiation](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#population-genetic-differentiation)
 
 
 Finally, all analysis, frameworks and programs covered here are not restricted to RADseq data and can be thought of as an application of probabilistics approaches for processing NGS data in general.
