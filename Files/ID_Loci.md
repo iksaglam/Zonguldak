@@ -250,7 +250,7 @@ Finally let say we are comfortable with U_OVT.loci and these are the loci we wan
   
 ```Bash
 scripts=/egitim/iksaglam/scripts
-SimplifyLoci2.pl U_OVT.loci | grep _1 -A1 --no-group-separator | sed 's/_1//' > U_OVT_ref.fasta
+perl $scripts/SimplifyLoci2.pl U_OVT.loci | grep _1 -A1 --no-group-separator | sed 's/_1//' > U_OVT_ref.fasta
 ```
 Don't forget to take a look at your nice list of RAD loci!
 ```Bash
