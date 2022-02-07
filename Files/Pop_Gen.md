@@ -208,7 +208,7 @@ sbatch get_PCA_Angsd.sh artv
 
 ## Admixture
 
-To determine ancestry (i.e. admixture) between populations we will use NGSadmix together with R for plotting the results. Like PCangsd NGSadmix requires a genotype likelihood file in beagle format. We will conduct an admixture analysis for K=2 to K=5 cluster and also run 10 replicated for each K value. These replicate runs will allow us to use Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)) to determine the most likely K based on the log likelihood of each K.
+To determine ancestry (i.e. admixture) between populations we will use NGSadmix together with R for plotting the results. Like PCangsd NGSadmix requires a genotype likelihood file in beagle format. We will conduct an admixture analysis for K=2 to K=5 clusters and also run 10 replicates for each K value. These replicate runs will allow us to use Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)) to determine the most likely K based on the log likelihood of each K.
 
 To run the analysis we will input our previously generated genotype likelihood file `artv.beagle.gz` into NGSadmix and loop over each different K values 10 times.
 
@@ -290,7 +290,7 @@ less -S results_sfs/CAM.sfs
 ```
 The first value represent the expected number of sites with derived allele frequency equal to 0, the second column the expected number of sites with frequency equal to 1 and so on.
 
-Lastly we can plot the SFS using a simple R script
+Lastly we can plot the SFS using a simple R script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotSFS.R).
 ```Bash
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotSFS.R results_sfs/CAM.sfs CAM 0 results_sfs/CAM.sfs.pdf
@@ -307,9 +307,9 @@ sbatch get_sfs.sh pop.list
 
 ## Nucleotive diversity and neutrality
 
-Once we have computed the allele frequency posterior probabilities and the SFS for each populations we can use these to calculate nucleotide diversity and related statistics for each population in ANGSD without againg relying on called genotypes.
+Once we have computed the allele frequency posterior probabilities and the SFS for each population we can use these to calculate nucleotide diversity and related statistics for each population in ANGSD without relying on called genotypes.
 
-Again it is better to calculate such statistics for each population separately. Calculation of such statistics for one population can be achieved using the following pipeline.
+Again it is better to calculate such statistics for each population separately. Calculation of diversity statistics for one population can be achieved using the following pipeline.
 ```Bash
 mkdir results_diversity
 realSFS saf2theta results_sfs/CAM.saf.idx -sfs results_sfs/CAM.sfs -outname results_diversity/CAM
@@ -321,7 +321,7 @@ This will result in an output file named `CAM.thetas.idx.pestPG`. We can view th
 less -S CAM.thetas.idx.pestPG
 ```
 
-The output will contain  5 different estimators of theta: Watterson, Pi, FuLi, fayH, L. and we  5 different neutrality test statistics: Tajima's D, Fu&Li F's, Fu&Li's D, Fay's H, Zeng's E. The final column is the effetive number of sites with data for each RAD contig.
+The output will contain 5 different estimators of theta: Watterson, Pi, FuLi, fayH, L. and 5 different neutrality test statistics: Tajima's D, Fu&Li F's, Fu&Li's D, Fay's H, Zeng's E. The final column is the effetive number of sites with data for each RAD contig.
 
 ```
 #(indexStart,indexStop)(firstPos_withData,lastPos_withData)(WinStart,WinStop)   Chr     WinCenter       tW      tP      tF      tH      tL      Tajima  fuf     fud     fayh    zeng    nSites
@@ -343,7 +343,7 @@ Alternatively if you have full genome data you might want to do a sliding window
 thetaStat do_stat results_diversity/CAM.thetas.idx -win 50000 -step 10000
 ```
 
-As always we would like to run the analysis in paralell for all populations.  An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_diversity.sh) and can be executed as follows:
+As always we would like to run the analysis in paralell for all populations. An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_diversity.sh) and can be executed as follows:
 ```Bash
 sbatch get_diversity.sh pop.list
 ```
@@ -353,7 +353,7 @@ If we wish we can also plot or make a table comparing our results between popula
 for i in `cat ../pop.list`; do cut -f2,4,5,9,14 ${i}.thetas.idx.pestPG | sed 1d | sed "s/^/$i\t/" >> all_pops_diversity.tsv ; done
 sed -i 1i'Pop\tRADloci\ttW\ttP\tTajD\tNsites’ all_pops_diversity.tsv
 ```
-Next we can use a simple R script ([here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotDiv.R)) to plot our results and create a summary table.
+Next we can use a simple R script as given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotDiv.R) to plot our results and create a summary table.
 ```Bash
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotDiv.R all_pops_diversity.tsv
@@ -362,14 +362,14 @@ Rscript $scripts/plotDiv.R all_pops_diversity.tsv
 
 
 ## Population genetic differentiation
-Here we are going to estimate allele frequency differentiation between populations using the Fst metrics. We can achieve this in ANGSD without relying on genotype calls and by directly working with the sample allele frequencies likelihoods we calculated before (i.e. saf files). However to estimate Fst values between populations we also need to estimate the joint SFS between any two populations (2D-SFS) which will serve as prior information for estimating Fst values. As an example we will calculate the Fst between the CAM and CAY populations.
+Here we are going to estimate allele frequency differentiation between populations using the Fst metrics. We can achieve this in ANGSD without relying on genotype calls  by directly working with the sample allele frequencies likelihoods we calculated before (i.e. `saf` files). However to estimate Fst values between populations we also need to estimate the joint SFS between any two populations (2D-SFS) which will serve as prior information for estimating Fst values. As an example we will calculate the Fst between the CAM and CAY populations.
 
-First we need to estimate the 2D-SFS between these two populations. This can be achieved by using the `realSFS` program. An important issue when doing this is to be sure that we are comparing the exact same  sites between populations. Luckily ANGSD does this automatically and considers only a set of overlapping sites.
+First we need to estimate the 2D-SFS between these two populations. This can be achieved by using the `realSFS` program. An important issue when doing this is to be sure that we are comparing the exact same sites between populations. Luckily ANGSD does this automatically and considers only a set of overlapping sites.
 ```Bash
 realSFS results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx > results_sfs/CAM.CAY.2dsfs
 ```
 
-Next we can use saf files of both populations together with the 2D-SFS to calculate joint allele frequency probabilities at each site.
+Next we can use `saf` files of both populations together with the `2D-SFS` to calculate joint allele frequency probabilities at each site.
 ```Bash
 mkdir results_fst
 realSFS fst index results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx -sfs results_sfs/CAM.CAY.2dsfs -fstout results_fst/CAM.CAY
@@ -378,7 +378,7 @@ This command will create and output file ending with `*.fst.idx` which stores pe
 ```Bash
 realSFS fst print results_fst/CAM.CAY.fst.idx | less -S
 ```
-Here columns are: RAD_loci, position, (a), (a+b) values, where FST is defined as a/(a+b). Note that FST on multiple SNPs is calculated as sum(a)/sum(a+b).
+Here columns are: `RAD_loci, position, (a), (a+b)` values, where FST is defined as `a/(a+b)`. Note that FST on multiple SNPs is calculated as `sum(a)/sum(a+b)`.
 
 Lastly we can calculate the global Fst between these two populations using the following command.
 ```Bash
@@ -419,7 +419,7 @@ cd results_fst
 ls *.fst | cut -d'_' -f1 | tr '.' '\t' | sed 1i'Pop1\tPop2' > pops
 paste pops fstfile > all_pops_fst.tsv
 ```
-Then we can input this table into and Rscript given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotFst.R) and plot a heat map.
+We can then input this table into an Rscript given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotFst.R) and plot a heat map.
 ```Bash
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotFst.R all_pops_fst.tsv
