@@ -353,63 +353,65 @@ Rscript $scripts/plotDiv.R all_pops_diversity.tsv
 ```
 
 ## Population genetic differentiation
+Here we are going to estimate allele frequency differentiation between populations using the Fst metrics. We can achieve this in ANGSD without relying on genotype calls and by directly working with the sample allele frequencies likelihoods we calculated before (i.e. saf files). However to estimate Fst values between populations we also need to estimate the joint SFS between any two populations (2D-SFS) which will serve as prior information for estimating Fst values. As an example we will calculate the Fst between the CAM and CAY populations.
 
-Secondly, we need to estimate a multi-dimensional SFS, for instance the joint SFS between 2 populations (2D). This can be used for making inferences on their divergence process (time, migration rate and so on). However, here we are interested in estimating the 2D-SFS as prior information for our FST/PBS.
-
-An important issue when doing this is to be sure that we are comparing the exactly same corresponding sites between populations. ANGSD does that automatically and considers only a set of overlapping sites.
-
-We are performing PBS assuming NAM (Native Americans) being the targeted population, and AFR and EUR as reference populations. All 2D-SFS between such populations and NAM are computed with:
-
-Here we are going to calculate allele frequency differentiation using the PBS (population branch statistic) and FST metrics. Again, we can achieve this by avoid genotype calling using ANGSD directly from the sample allele frequencies likelihoods. Note that we are using the 2D-SFS calculated above as prior information for the joint allele frequency probabilities at each site. As an illustration, PEL is our target population, while LWK and TSI are reference populations.
-
-Specifically, we are computing a slinding windows scan, with windows of 50kbp and a step of 10kbp. This can be achieved using the following commands. This first command computes per-site FST indexes:
-
-
-
-
-
-### sstitle
-
-normal text
-
-
-```
-code block
+First we need to estimate the 2D-SFS between these two populations. This can be achieved by using the `realSFS` program. An important issue when doing this is to be sure that we are comparing the exact same  sites between populations. Luckily ANGSD does this automatically and considers only a set of overlapping sites.
+```Bash
+realSFS results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx > results_sfs/CAM.CAY.2dsfs
 ```
 
-*italic*
+Next we can use saf files of both populations together with the 2D-SFS to calculate joint allele frequency probabilities at each site.
+```Bash
+mkdir results_fst
+realSFS fst index results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx -sfs results_sfs/CAM.CAY.2dsfs -fstout results_fst/CAM.CAY
+```
+This command will create and output file ending with `*.fst.idx` which stores per-site FST indexes. We can take a look at this file as follows.
+```Bash
+realSFS fst print results_fst/CAM.CAY.fst.idx | less -S
+```
+Here columns are: RAD_loci, position, (a), (a+b) values, where FST is defined as a/(a+b). Note that FST on multiple SNPs is calculated as sum(a)/sum(a+b).
 
+Lastly we can calculate the global Fst between these two populations using the following command.
+```Bash
+realSFS fst stats results_fst/CAM.CAY.fst.idx 2> results_fst/CAM.CAY_global.fst
+```
 
+We can take a look at this final estimate by using less.
+```Bash
+less CAM.CAY_global.fst
+```
 
-[github](www.github.com)
+```
+ -> Assuming idxname:results_fst/CAM.CAY.fst.idx
+ -> Assuming .fst.gz file: results_fst/CAM.CAY.fst.gz
+ -> FST.Unweight[nObs:13835235]:0.116738 Fst.Weight:0.260466
+```
 
+Note, if you have full genome data you might want to do a windowed scan analysis at this step.
+```Bash
+realSFS fst stats2 results_fst/CAM.CAY.fst.idx -win 50000 -step 10000 -whichFST 1 > results_fst/CAM.CAY.fst.txt
+```
 
+As before we can perform all pairwise comparisons in bulk using appropriate shell scripts found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts).
 
-**bold**
+2D-SFS between all populations
+```Bash
+sbatch get_2Dsfs.sh pop.list
+```
+Fst between all populations
+```Bash
+sbatch get_fst.sh pop.list
+```
 
-
-
-
-divider below
----
-
-
-
-- list item
-- list item 2
-
-
-
-
-
-table below
-
-a | b | c
--- | -- | --
-xxx | yyy | zzz
-
-
-Inline code block `im a code block`
-
-
-And to create a Markdown file, just name your file with extension `.md` or `.MD`
+Lastly we can plot our results in the form of a heat map illustrating pairwise genetic differentiation (Fst) between populations. To do this first let us make a table summarizing global fst values between each population.
+```
+cd results_fst
+(for fst in `ls *.fst`; do grep -Po 'Fst.Weight:\K[^ ]+' $fst; done) | sed 1iFst > fstfile
+ls *.fst | cut -d'_' -f1 | tr '.' '\t' | sed 1i'Pop1\tPop2' > pops
+paste pops fstfile > all_pops_fst.tsv
+```
+Then we can input this table into and Rscript given [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and plot a heat map.
+```Bash
+scripts=/egitim/iksaglam/scripts
+Rscript $scripts/plotFst.R all_pops_fst.tsv
+```
