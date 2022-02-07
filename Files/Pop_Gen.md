@@ -171,8 +171,86 @@ zless artv.vcf.gz
 less artv.tped
 ```
 
+## Population structure (PCA)
 
+Now that we have calculated our genotype likelihoods and probabilities we can use these to perform a principal component analyses (PCA) summarizing genetic structure between populations, taking genotype uncertainty into account. To this end we will first estimate the covariance matrix between individuals based on genotype likelihoods using PCangsd and then decompose this matrix into principle components using R and plot the results. 
 
+`PCangsd` takes as input genotype likelihoods in `Beagle format` so to calculate our covarinace matrix we will be using the `artv.beagle.gz` file created earlier.
+
+```Bash
+mkdir results_pca
+python pcangsd.py -beagle results_pca/artv.beagle.gz -o results_pca/artv -threads 2
+```
+
+This will create an output called art.cov which contains our covariance matrix which we will now use to conduct and eigondecompostion and plot our first two PC axes. We will also create a simple cluster file so that we can label or color our populations in our plot.
+
+```Bash
+cut -c3-5 artv.list | sed 1iCLUSTER > CLUSTER
+seq 30 | sed 1iFID > FID
+printf '1\n%.0s' {1..30} | sed 1iIID > IID
+paste -d' ' FID IID CLUSTER > artv.clst
+```
+
+```Bash
+scripts=/egitim/iksaglam/scripts
+Rscript $scripts/plotPCA.R -i results_pca/artv.cov -c 1-2 -a artv.clst -o results_pca/artv_pca_1_2.pdf
+```
+
+Download the resulting pdf file to your local computer and take a look.
+
+An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+
+```Bash
+sbatch get_PCA_Angsd.sh artv
+```
+
+## Admixture
+
+To determine ancestry (i.e. admixture) between populations we will use NGSadmix together with R for plotting the results. Like PCangsd NGSadmix requires a genotype likelihood file in beagle format. We will conduct an admixture analysis for K=2 to K=5 cluster and also run 10 replicated for each K value. These replicate runs will allow us to use Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)) to determine the most likely K based on the log likelihood of each K.
+
+To run the analysis we will input our previously generated genotype likelihood file `artv.beagle.gz` into NGSadmix and loop over each different K values 10 times.
+
+```Bash
+mkdir results_admix
+x=2
+while [ $x -le 5 ] 
+do
+  y=1
+  while [ $y -le 10 ]
+  do
+  NGSadmix -likes results_geno/artv.beagle.gz -K $x -P 4 -seed $[RANDOM] -o results_admix/artv_admix${x}_run${y}
+  y=$(( $y + 1 )) 
+  done 
+x=$(( $x + 1 ))
+done
+```
+
+An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+
+```Bash
+sbatch get_admix.sh artv 5
+```
+
+Next, we will take the likelihood value from each run of NGSadmix and prepare a Clumpak file to determine the most like K based on Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)).
+```Bash
+cd results_admix
+(for log in `ls *.log`; do grep -Po 'like=\K[^ ]+' $log; done) > logfile
+(for log in `ls *.log`; do grep -Po 'nPop=\K[^ ]' $log; done) > noK
+paste noK logfile > admix_runs_LH.txt
+```
+
+We can now import our formatted logfile into [Clumpak](http://clumpak.tau.ac.il/bestK.html) and determibe the most likely K value for our populations.
+
+Lastly we will visulize our admixture results for best K in the form of a barplot plot using R. For this we need to import the .qopt file from one of our runs for the most likely K into R. In this case best K was K=3. Additionally we will create an info file so we can label our population in the bar plot. We can create such a file using the simple commands below.
+```Bash
+cut -c3-5 artv.list | paste - artv.list > artv.info
+```
+Now that our info file is ready we can plot our results like below
+```Bash
+scripts=/egitim/iksaglam/scripts
+Rscript $scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
+```
+Download the resulting pdf file onto your local computer and view!
 
 
 
