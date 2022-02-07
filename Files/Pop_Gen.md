@@ -196,6 +196,9 @@ scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotPCA.R -i results_pca/artv.cov -c 1-2 -a artv.clst -o results_pca/artv_pca_1_2.pdf
 ```
 
+![PCA](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pca_1_2.png)
+
+
 Download the resulting pdf file to your local computer and take a look.
 
 An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
@@ -250,6 +253,9 @@ Now that our info file is ready we can plot our results like below
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
 ```
+![Admix](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_admix3_run1.qopt.png)
+
+
 Download the resulting pdf file onto your local computer and view!
 
 
@@ -351,6 +357,8 @@ Next we can use a simple R script ([here](https://github.com/iksaglam/Zonguldak/
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotDiv.R all_pops_diversity.tsv
 ```
+[Tajima's D](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_TajimaD.png)
+
 
 ## Population genetic differentiation
 Here we are going to estimate allele frequency differentiation between populations using the Fst metrics. We can achieve this in ANGSD without relying on genotype calls and by directly working with the sample allele frequencies likelihoods we calculated before (i.e. saf files). However to estimate Fst values between populations we also need to estimate the joint SFS between any two populations (2D-SFS) which will serve as prior information for estimating Fst values. As an example we will calculate the Fst between the CAM and CAY populations.
@@ -415,3 +423,5 @@ Then we can input this table into and Rscript given [here](https://github.com/ik
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotFst.R all_pops_fst.tsv
 ```
+[Fst](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_Fst.png)
+
