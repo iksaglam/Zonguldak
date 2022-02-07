@@ -13,8 +13,8 @@ Our goal here is to show how to go from raw fastq files to alignment files (BAMs
 Specifically we will be covering the following topics:
 
 - [Sequence alignment, cleanup and indexing](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#sequence-alignment-cleanup-and-indexing)
-- Genotyping and variant calling
-- Population structure (PCA)
+- [Genotyping and variant calling](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#genotyping-and-variant-calling)
+- [Population structure (PCA)](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#population-structure-(PCA))
 - Admixture
 - Site frequency spectrum
 - Nucleotive diversity and neutrality
