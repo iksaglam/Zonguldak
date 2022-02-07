@@ -267,7 +267,7 @@ Download the resulting pdf file onto your local computer and view!
 
 The SFS is one of the most important summary statistics in population genetics as it summarizes the distributuion of different allele frequencies along the genome. From this distribution we can calculate such statistics as Watterson's theta, Pi, Tajima's D as well as conduct demographic analysis to model past evolutionary or ecological forces affecting genetic diversity of populations (i.e. like bottlenecks or selection). The SFS can be folded or unfolded, and the latter case implies the use of an outgroup species to define the ancestral state (derived vs ancestral allele).
 
-We will use ANGSD to estimate the SFS based on the methods given [here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037558). Like before we will use genotype likelihoods as input and from these ANGSD computes posterior probabilities of the Sample Allele Frequency (SAF) `-doSaf`. Next the generated `saf` files are used to estimate the SFS using the program `realSFS`. 
+We will use `ANGSD` to estimate the SFS based on the methods given [here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037558). Like before we will use genotype likelihoods as input and from these `ANGSD` computes posterior probabilities of the Sample Allele Frequency (SAF) `-doSaf`. Next the generated `saf` files are used to estimate the SFS using the program `realSFS`. 
 
 The SFS should be computed for each population separately. Since we have an out group (i.e. *Ph. uvarovi*) we can polorise our alleles (i.e. determine ancestral and derived states) so we want to estimate the unfolded SFS. Basic commands for estimating the SFS for a single population is given below.
 
