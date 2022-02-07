@@ -107,7 +107,7 @@ TCATCTGAGACAACCCACAGAGAGATATCAACTGCTTAGAGAGTAGATCTAACTCTCGGACTCAGAGGGAGTAAGTTGTA
 ```
 </details><p>  
 
-
+[Topics](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#in-this-tutorial-we-will-cover-the-following-topics)
 
 ### Building a pairwise alignment map between all reads:
 Now we are ready to build our alignment map. For the purposes of this tutorial we will be using the aligner novaalign. Firstly we need to concatenate all files into a single hash file in fasta format and index this file for mapping.
@@ -172,6 +172,8 @@ Let us take a look at the first few lines of our alignment map
 ```
 </details><p>  
 
+[Topics](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#in-this-tutorial-we-will-cover-the-following-topics)  
+  
 ### Locus discovery:
 Now that we have an alignment map we are ready to discover unique (i.e. individual) RAD loci. To do this we will use a custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/IdentifyLoci3.pl). The first lines of this script contains important criteria which we will have to set and which will influence our results (i.e. the number loci we end up with).
 
@@ -279,3 +281,4 @@ ATCTTCACTTCAACATTCTAGATGCCTGGAACAATCAATGGCAGGAACAAATTTGCCTGACACATCGCCACTCCTTGGGA
 >R063755
 TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
+[Top]https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#working-without-a-reference-genome-rad-loci-discovery
