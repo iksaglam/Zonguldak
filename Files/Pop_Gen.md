@@ -113,7 +113,7 @@ cd analyses
 ls /egitim/iksaglam/alignments/*.sorted_proper_rmdup.bam > artv.bamlist
 for i in `cat pop.list`; do grep $i artv.bamlist > ${i}.bamlist; done
 ```
-[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
+[return to topics](https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Genotyping and variant calling
 
@@ -172,7 +172,7 @@ zless artv.geno.gz
 zless artv.vcf.gz
 less artv.tped
 ```
-[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
+[return to topics](https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Population structure (PCA)
 
@@ -208,7 +208,7 @@ An example shell script for running the analysis on the cluster can be found [he
 ```Bash
 sbatch get_PCA_Angsd.sh artv
 ```
-[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
+[return to topics](https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Admixture
 
@@ -261,7 +261,7 @@ Rscript $scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
 
 Download the resulting pdf file onto your local computer and view!
 
-[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
+[return to topics](https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## The site frequency spectrum (SFS)
 
@@ -366,7 +366,7 @@ Rscript $scripts/plotDiv.R all_pops_diversity.tsv
 ```
 ![Tajima's D](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_TajimaD.png)
 
-[return to topics] (https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
+[return to topics](https://github.com/iksaglam/Zonguldak/edit/main/Files/Pop_Gen.md#topics-to-be-covered)
 
 ## Population genetic differentiation
 Here we are going to estimate allele frequency differentiation between populations using the Fst metrics. We can achieve this in ANGSD without relying on genotype calls  by directly working with the sample allele frequencies likelihoods we calculated before (i.e. `saf` files). However to estimate Fst values between populations we also need to estimate the joint SFS between any two populations (2D-SFS) which will serve as prior information for estimating Fst values. As an example we will calculate the Fst between the CAM and CAY populations.
