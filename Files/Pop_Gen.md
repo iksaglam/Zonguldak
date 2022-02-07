@@ -157,7 +157,7 @@ mInd=$((${nInd}/2))
 
 angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
 ```
-An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_PCA_Angsd.sh) and can be executed as follows:
+An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_genos.sh) and can be executed as follows:
 ```Bash
 sbatch get_genos.sh artv /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 ```
@@ -182,7 +182,7 @@ mkdir results_pca
 python pcangsd.py -beagle results_pca/artv.beagle.gz -o results_pca/artv -threads 2
 ```
 
-This will create an output called art.cov which contains our covariance matrix which we will now use to conduct and eigondecompostion and plot our first two PC axes. We will also create a simple cluster file so that we can label or color our populations in our plot.
+This will create an output called art.cov which contains our covariance matrix which we will now use to conduct an eigendecomposition and plot our first two PC axes using the Rscript [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotPCA.R). We will also create a simple cluster file so that we can color label our populations in the plot.
 
 ```Bash
 cut -c3-5 artv.list | sed 1iCLUSTER > CLUSTER
@@ -198,10 +198,9 @@ Rscript $scripts/plotPCA.R -i results_pca/artv.cov -c 1-2 -a artv.clst -o result
 
 ![PCA](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pca_1_2.png)
 
-
 Download the resulting pdf file to your local computer and take a look.
 
-An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_PCA_Angsd.sh) and can be executed as follows:
 
 ```Bash
 sbatch get_PCA_Angsd.sh artv
@@ -228,7 +227,7 @@ x=$(( $x + 1 ))
 done
 ```
 
-An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_admix.sh) and can be executed as follows:
 
 ```Bash
 sbatch get_admix.sh artv 5
@@ -244,7 +243,7 @@ paste noK logfile > admix_runs_LH.txt
 
 We can now import our formatted logfile into [Clumpak](http://clumpak.tau.ac.il/bestK.html) and determibe the most likely K value for our populations.
 
-Lastly we will visulize our admixture results for best K in the form of a barplot plot using R. For this we need to import the .qopt file from one of our runs for the most likely K into R. In this case best K was K=3. Additionally we will create an info file so we can label our population in the bar plot. We can create such a file using the simple commands below.
+Lastly we will visulize our admixture results for best K in the form of a barplot plot using the Rscript [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotAdmix.R). For this we need to import the `.qopt` file from one of our runs for the most likely K into R. In this case best K was K=3. Additionally we will create an `info` file so we can label our population in the bar plot. We can create such a file using the simple commands below.
 ```Bash
 cut -c3-5 artv.list | paste - artv.list > artv.info
 ```
@@ -261,11 +260,11 @@ Download the resulting pdf file onto your local computer and view!
 
 ## The site frequency spectrum (SFS)
 
-The SFS is one of the most important summary statistics in population genetics as it summarizes the distributuion of different allele frequencies along the genome. From this distribution we can calculate such statistics as Watterson's theta, Pi, Tajima's D as well as conduct demographic analysis to model past evolutionary or ecological forces affecting genetic diversity of populations (i.e. like bottlenecks or selection). The SFS can be folded or unfolded, and the latter case implies the use of an outgroup species to define the ancestral state.
+The SFS is one of the most important summary statistics in population genetics as it summarizes the distributuion of different allele frequencies along the genome. From this distribution we can calculate such statistics as Watterson's theta, Pi, Tajima's D as well as conduct demographic analysis to model past evolutionary or ecological forces affecting genetic diversity of populations (i.e. like bottlenecks or selection). The SFS can be folded or unfolded, and the latter case implies the use of an outgroup species to define the ancestral state (derived vs ancestral allele).
 
-We will use ANGSD to estimate the SFS based on the methods given here. Like before we will use genotype likelihoods as input and from these ANGSD computes posterior probabilities of Sample Allele Frequency (SAF) `-doSaf`. Next the generated `saf` files are used to estimate the SFS using the program `realSFS`. 
+We will use ANGSD to estimate the SFS based on the methods given [here](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037558). Like before we will use genotype likelihoods as input and from these ANGSD computes posterior probabilities of the Sample Allele Frequency (SAF) `-doSaf`. Next the generated `saf` files are used to estimate the SFS using the program `realSFS`. 
 
-The SFS should be computed for each population separately. Since we have an out group (i.e. *Ph. uvarovi*) we can polorise our alleles (i.e. determine ancestral and derived states) so we want to estimate the unfolded SFS. Basic commands for estimating the SFS for one population is given below.
+The SFS should be computed for each population separately. Since we have an out group (i.e. *Ph. uvarovi*) we can polorise our alleles (i.e. determine ancestral and derived states) so we want to estimate the unfolded SFS. Basic commands for estimating the SFS for a single population is given below.
 
 ### Calculate SAF file
 ```Bash
@@ -296,9 +295,11 @@ Lastly we can plot the SFS using a simple R script
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotSFS.R results_sfs/CAM.sfs CAM 0 results_sfs/CAM.sfs.pdf
 ```
+![SFS](https://github.com/iksaglam/Zonguldak/blob/main/Files/CAM.sfs.png)
+
 Download the resulting pdf file onto your local computer and view!
 
-Ideally we would of course want to cycle through all populations in parallel. An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+Ideally we would of course want to cycle through all populations in parallel. An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_sfs.sh) and can be executed as follows:
 
 ```Bash
 sbatch get_sfs.sh pop.list
@@ -342,7 +343,7 @@ Alternatively if you have full genome data you might want to do a sliding window
 thetaStat do_stat results_diversity/CAM.thetas.idx -win 50000 -step 10000
 ```
 
-As always we would like to run the analysis in paralell for all populations.  An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+As always we would like to run the analysis in paralell for all populations.  An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_diversity.sh) and can be executed as follows:
 ```Bash
 sbatch get_diversity.sh pop.list
 ```
@@ -352,7 +353,7 @@ If we wish we can also plot or make a table comparing our results between popula
 for i in `cat ../pop.list`; do cut -f2,4,5,9,14 ${i}.thetas.idx.pestPG | sed 1d | sed "s/^/$i\t/" >> all_pops_diversity.tsv ; done
 sed -i 1i'Pop\tRADloci\ttW\ttP\tTajD\tNsites’ all_pops_diversity.tsv
 ```
-Next we can use a simple R script ([here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts)) to plot our results and create a summary table.
+Next we can use a simple R script ([here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotDiv.R)) to plot our results and create a summary table.
 ```Bash
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotDiv.R all_pops_diversity.tsv
@@ -400,7 +401,7 @@ Note, if you have full genome data you might want to do a windowed scan analysis
 realSFS fst stats2 results_fst/CAM.CAY.fst.idx -win 50000 -step 10000 -whichFST 1 > results_fst/CAM.CAY.fst.txt
 ```
 
-As before we can perform all pairwise comparisons in bulk using appropriate shell scripts found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts).
+As before we can perform all pairwise comparisons in bulk using appropriate shell scripts found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_2Dsfs.sh) for calculating the 2D-SFS and [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_fst.sh) for calculating Fst statistics.
 
 2D-SFS between all populations
 ```Bash
@@ -418,7 +419,7 @@ cd results_fst
 ls *.fst | cut -d'_' -f1 | tr '.' '\t' | sed 1i'Pop1\tPop2' > pops
 paste pops fstfile > all_pops_fst.tsv
 ```
-Then we can input this table into and Rscript given [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and plot a heat map.
+Then we can input this table into and Rscript given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotFst.R) and plot a heat map.
 ```Bash
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotFst.R all_pops_fst.tsv
