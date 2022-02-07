@@ -253,9 +253,64 @@ Rscript $scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
 Download the resulting pdf file onto your local computer and view!
 
 
+## The site frequency spectrum (SFS)
+
+The SFS is one of the most important summary statistics in population genetics as it summarizes the distributuion of different allele frequencies along the genome. From this distribution we can calculate such statistics as Watterson's theta, Pi, Tajima's D as well as conduct demographic analysis to model past evolutionary or ecological forces affecting genetic diversity of populations (i.e. like bottlenecks or selection). The SFS can be folded or unfolded, and the latter case implies the use of an outgroup species to define the ancestral state.
+
+We will use ANGSD to estimate the SFS based on the methods given here. Like before we will use genotype likelihoods as input and from these ANGSD computes posterior probabilities of Sample Allele Frequency (SAF) `-doSaf`. Next the generated `saf` files are used to estimate the SFS using the program `realSFS`. 
+
+The SFS should be computed for each population separately. Since we have an out group (i.e. *Ph. uvarovi*) we can polorise our alleles (i.e. determine ancestral and derived states) so we want to estimate the unfolded SFS. Basic commands for estimating the SFS for one population is given below.
+
+### Calculate SAF file
+```Bash
+mkdir results_sfs
+ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+angsd -bam CAM.bamlist -ref $ref -anc $ref -out results_sfs/CAM -GL 1 -doSaf 1 -doCounts 1 -minMapQ 10 -minQ 20
+```
+
+Let us take a look at the out file.
+```Bash
+realSFS print results_sfs/CAM.saf.idx | less -S
+```
+These values represent the sample allele frequency likelihoods at each site. So the first value (after the chromosome and position columns) is the likelihood of having 0 copies of the derived allele, the second indicates the probability of having 1 copy and so on. Note that these values are in log format and scaled so that the maximum is 0.
+
+### Estimate the SFS
+```Bash
+realSFS results_sfs/CAM.saf.idx -maxIter 100 > results_sfs/CAM.sfs
+```
+
+Take a look at the output file:
+```bash
+less -S results_sfs/CAM.sfs
+```
+The first value represent the expected number of sites with derived allele frequency equal to 0, the second column the expected number of sites with frequency equal to 1 and so on.
+
+Lastly we can plot the SFS using a simple R script
+```Bash
+scripts=/egitim/iksaglam/scripts
+Rscript $scripts/plotSFS.R results_sfs/CAM.sfs CAM 0 results_sfs/CAM.sfs.pdf
+```
+Download the resulting pdf file onto your local computer and view!
+
+Ideally we would of course want to cycle through all populations in parallel. An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/tree/main/Scripts) and can be executed as follows:
+
+```Bash
+sbatch get_sfs.sh pop.list
+```
 
 
 
+
+We cycle across all populations:
+
+
+
+
+for each site and from there and estimate of the SFS is computed.
+
+These steps can be accomplished in ANGSD using -doSaf 1/2 options and the program realSFS.
+
+We use ANGSD to estimate SFS using on example dataset, using the methods described here. Details on the implementation can be found here. Briefly, from sequencing data one computes genotype likelihoods (as previously described). From these quantities ANGSD computes posterior probabilities of Sample Allele Frequency (SAF), for each site. Finally, an estimate of the SFS is computed.
 
 
 
