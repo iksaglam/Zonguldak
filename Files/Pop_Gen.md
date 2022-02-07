@@ -27,14 +27,14 @@ Finally, all analysis, frameworks and programs covered here are not restricted t
 ## Sequence alignment, cleanup and indexing
 As a first step let us copy the data into our own directory and list to make sure everything was copied correctly.
 
-```
+```Bash
 cd ~/my_directory/
 cp /egitim/iksaglam/data/artvinensis/*.fastq.gz ./
 ls *.fastq.gz
 ```
 
 Let us also make a file listing all individuals and another one listing all populations for future use
-```
+```Bash
 ls *.fastq.gz | cut -d'_' -f1-2 > artv.list
 cut -c3-5 artv.list | uniq > pop.list
 ```
@@ -47,7 +47,7 @@ For aligning reads we will use [BWA](http://bio-bwa.sourceforge.net/) (Burrows-W
 Like all other alignment tools for genome wide short reads the first step is to index the reference genome. BWA indexes the genome with an FM Index based on the Burrows-Wheeler Transform enabling memory efficient mapping. 
 
 The basic command for indexing the genome using BWA is:
-```
+```Bash
 ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 bwa index -a bwtsw $ref
 ```
@@ -57,13 +57,13 @@ This will result in several indexes including the BWT index `/egitim/iksaglam/re
 #### Aligning reads with BWA-MEM
 
 Now that we have our indexes created, we can start aligning our reads (i.e. individual fastq files) to the reference genome. Let us first create a new directory where we will store our alignment files and cd (change directory) into it.
-```
+```Bash
 mkdir alignments
 cd alignments/
 ```
 Next we will use the BWA-MEM algorithm to align one of our paired-end reads to the reference genome and output results as a [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) (Sequence Alignment/Map Format) file.
 
-```
+```Bash
 reads=/egitim/iksaglam/data/artvinensis
 ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 out=/egitim/iksaglam/alignments
@@ -71,7 +71,7 @@ bwa mem $ref $reads/A_CAMD04_R1.fastq.gz $reads/A_CAMD04_R2.fastq.gz > $out/A_CA
 ```
 As before we can take a look at our SAM files using less.
 
-```
+```Bash
 less -S A_CAMD04_R1.sam
 ```
 
@@ -79,7 +79,7 @@ less -S A_CAMD04_R1.sam
 
 To save space we ideally want to transform our SAM file into a binary BAM format and sort by coordinates. Next when working with reduced representation libraries like RADseq data it is advantegous to keep only properly paired individuals. Finally we want to remove/mark PCR duplicates using [picard-tools](https://broadinstitute.github.io/picard/), so they do not bias variant calling and genotyping and index our final BAM file.
 
-```
+```Bash
 samtools view -bS A_CAMD04.sam > A_CAMD04.bam
 samtools sort A_CAMD04.bam A_CAMD04_sorted.bam
 samtools view -b -f 0x2 A_CAMD04_sorted.bam > A_CAMD04_sorted_proper.bam
@@ -89,24 +89,24 @@ samtools index A_CAMD04_sorted_proper_rmdup.bam
 For the purposes of this tutorial we are directly removing duplicates `REMOVE_DUPLICATES=True` from our resulting bam files (to primarily save space) but usually we only want to mark our duplicates and not remove them `REMOVE_DUPLICATES=False`.
 
 To view our resuling bam files we can use the following command
-```
+```Bash
 samtools view A_CAMD04_sorted_proper_rmdup.bam | less -S
 ```
 
 We can also get alignment statistics using samtools flagstat
-```
+```Bash
 samtools flagstat A_CAMD04_sorted_proper_rmdup.bam
 ```
 #### Running in parallel or bulk:
 Instead of aligning each paired read one by one normally we would want to do this in bulk. You can find an example shell script that can do this [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/align_pe_reads.sh). We can use this script to execute the above pipeline and get alignment files for all individuals `artv.list` simultaneously using the following command.
 
-```
+```Bash
 sbatch align_pe_reads.sh artv.list /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 ```
 
 Now that we have 60 BAM files at low/medium depth we can create a bamlist for the data set as a whole and for each population to use in downstream analysis in a new directory called `analyses`.
 
-```
+```Bash
 mkdir analyses
 cd analyses
 ls /egitim/iksaglam/alignments/*.sorted_proper_rmdup.bam > artv.bamlist
@@ -149,7 +149,7 @@ Option | Meaning |
 
 Recalling also our choice for data filtering and that we would like to output files in various formats, our final command line would look something like this:
 
-```
+```Bash
 mkdir results_geno
 ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 nInd=$(wc -l artv.bamlist | awk '{print $1}')
@@ -158,12 +158,12 @@ mInd=$((${nInd}/2))
 angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
 ```
 An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_PCA_Angsd.sh) and can be executed as follows:
-```
+```Bash
 sbatch get_genos.sh artv /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
 ```
 
 Take a look at some of the resulting files using less. Can you makes sense of them?
-```
+```Bash
 zless artv.mafs.gz 
 zless artv.beagle.gz  
 zless artv.geno.gz  
