@@ -27,7 +27,7 @@ ls *.fastq | cut -d'_' -f1-2 > U_OVT.list
 
 #### Qaulity filtering of fastq files:
 
-Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). Here we will be using a custom perl script ([here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/QualityFilter.pl))but any quality filtering software can be used.
+Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). We will be using a custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/QualityFilter.pl), but any quality filtering software can be used as well.
 
 ```Bash
 scripts=/egitim/iksaglam/scripts
@@ -66,7 +66,7 @@ AAGAGGAAAAATCAAATGCATGTGAAGGTCGTTTGAGCCTCTAGAGCTATCCGCCTTTTGGATGTCCAATACCACTACGA
 
 
 #### Building a hash table for all reads:
-Next we will use another custom perl script [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/HashSeqs.pl) to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
+Next we will use another custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/HashSeqs.pl) to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
 
 ```Bash
 scripts=/egitim/iksaglam/scripts
@@ -110,14 +110,14 @@ TCATCTGAGACAACCCACAGAGAGATATCAACTGCTTAGAGAGTAGATCTAACTCTCGGACTCAGAGGGAGTAAGTTGTA
 
 
 #### Building a pairwise alignment map between all reads:
-Now we are ready to build our alignment map. For the purposes of this tutorial we will be using the aligner novaalign. Firstly we need to concatenate all files into a single hash file (i.e. fasta file) and index this file for mapping.
+Now we are ready to build our alignment map. For the purposes of this tutorial we will be using the aligner novaalign. Firstly we need to concatenate all files into a single hash file in fasta format and index this file for mapping.
 
 ```Bash
 cat *.hash > U_OVT.fasta
 novoindex U_OVT.index U_OVT.fasta
 ```
 
-Next we will map our hash file containing all reads (i.e. U_OVT.fasta) back on to its own index. This way we will obtain pairwise alignment statictics between each read in our hash file, essentially giving us an alignment map for all pairwise read comparisons with enough similarity to align. To make sure that novoalign does not report only the best alignments we will be using the "exhaustive" mapping option (-rE) with -t 180 (%67 percent identity). Here we will set -rE to 50 (reports the top 50 alignments) for quick results but feel free to go as high as you want.
+Next we will map our hash file containing all reads (i.e. U_OVT.fasta) back on to its own index. This way we will obtain pairwise alignment statictics between each read in our hash file, essentially giving us an alignment map for all pairwise read comparisons with enough similarity to align. To make sure that novoalign does not report only the best alignments we will be using the "exhaustive" mapping option `-rE` with `-t 180` (%67 percent identity). Here we will set `-rE` to `50` (reports the top 50 alignments) for quick results but feel free to go as high as you want.
   
 ```Bash
 novoalign  -rE 50 -t 180 -d U_OVT.index -f U_OVT.fasta > U_OVT.novo
@@ -173,7 +173,7 @@ Let us take a look at the first few lines of our alignment map
 </details><p>  
 
 #### Locus discovery:
-Now that we have an alignment map we are ready to discover unique (i.e. individual) RAD loci. To do this we will use a custom perl script ([here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/IdentifyLoci3.pl)). The first lines of this script contains important criteria which we will have to set and which will influence our results (i.e. the number loci we end up with).
+Now that we have an alignment map we are ready to discover unique (i.e. individual) RAD loci. To do this we will use a custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/IdentifyLoci3.pl). The first lines of this script contains important criteria which we will have to set and which will influence our results (i.e. the number loci we end up with).
 
 ```Perl
 #!/usr/bin/perl
@@ -221,7 +221,7 @@ TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
 We can see that we have discovered 63,751 individual RAD loci.
   
-Now let us change $max_alignment_score to 60 (meaning we are allowing two SNPs within each RAD loci) and redo the analaysis
+Now let us change `$max_alignment_score` to `60` (meaning we are allowing two SNPs within each RAD loci) and redo the analaysis
   
 ```Bash
 scripts=/egitim/iksaglam/scripts
@@ -242,9 +242,9 @@ AAATGTCAATAAATAAAAGATGTGACTCATAACGGAATCTGGGGACTACTGAAATGGGTGAACTCCAGTAATTTTTTTGT
 >R048762{U_OVTD08;30892;7|U_OVTE08;79860;3|U_OVTE09;69063;4|U_OVTE11;116063;2}
 TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
-Since we allowed more variability within each RAD loci the total number of loci dropped from 63,751 to 48,762. Play around with some of the other parameters to see how they influence your results.
+Since we allowed more variability within each RAD loci the total number of loci dropped from `63,751` to `48,762`. Play around with some of the other parameters to see how they influence your results.
   
-Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and comvert our loci file into a clean looking fasta file using the custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/SimplifyLoci2.pl).
+Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and convert our loci file into a clean looking fasta file using the custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/SimplifyLoci2.pl).
   
 ```Bash
 scripts=/egitim/iksaglam/scripts
