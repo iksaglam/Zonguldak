@@ -185,7 +185,7 @@ mkdir results_pca
 python pcangsd.py -beagle results_pca/artv.beagle.gz -o results_pca/artv -threads 2
 ```
 
-This will create an output called art.cov which contains our covariance matrix which we will now use to conduct an eigendecomposition and plot our first two PC axes using the Rscript [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotPCA.R). We will also create a simple cluster file so that we can color label our populations in the plot.
+This will create an output called `art.cov` which contains our covariance matrix which we will now use to conduct an eigendecomposition and plot our first two PC axes using the Rscript [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotPCA.R). We will also create a simple cluster file so that we can color label our populations in the plot.
 
 ```Bash
 cut -c3-5 artv.list | sed 1iCLUSTER > CLUSTER
