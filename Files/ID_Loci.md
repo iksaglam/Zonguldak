@@ -4,10 +4,10 @@ Our goal in this tutorial is to understand the basics of RAD loci discovery from
 
 
 #### In this tutorial we will cover the following topics:
-- Qaulity filtering of fastq files
-- Building a hash table for all reads with ID and count information
-- Building a pairwise alignment map between all reads
-- Locus discovery
+- [Qaulity filtering of fastq files](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#qaulity-filtering-of-fastq-files)
+- [Building a hash table for all reads with ID and count information](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#building-a-hash-table-for-all-reads)
+- [Building a pairwise alignment map between all reads](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#building-a-pairwise-alignment-map-between-all-reads)
+- [Locus discovery](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md#locus-discovery)
 
 #### Data:
 To discover a set of unique RAD loci we will use forward reads from 6 fastq files from the Ovit population of *Ph. uvarovi*. The data can be found here `/egitim/iksaglam/data/uvarovi`. As a first step let us now copy this data into our own directory and list to make sure everything was copied correctly.
@@ -25,7 +25,7 @@ ls *.fastq | cut -d'_' -f1-2 > U_OVT.list
 ```
 
 
-#### Qaulity filtering of fastq files:
+### Qaulity filtering of fastq files:
 
 Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). We will be using a custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/QualityFilter.pl), but any quality filtering software can be used as well.
 
@@ -65,7 +65,7 @@ AAGAGGAAAAATCAAATGCATGTGAAGGTCGTTTGAGCCTCTAGAGCTATCCGCCTTTTGGATGTCCAATACCACTACGA
 </details><p>
 
 
-#### Building a hash table for all reads:
+### Building a hash table for all reads:
 Next we will use another custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/HashSeqs.pl) to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
 
 ```Bash
@@ -109,7 +109,7 @@ TCATCTGAGACAACCCACAGAGAGATATCAACTGCTTAGAGAGTAGATCTAACTCTCGGACTCAGAGGGAGTAAGTTGTA
 
 
 
-#### Building a pairwise alignment map between all reads:
+### Building a pairwise alignment map between all reads:
 Now we are ready to build our alignment map. For the purposes of this tutorial we will be using the aligner novaalign. Firstly we need to concatenate all files into a single hash file in fasta format and index this file for mapping.
 
 ```Bash
@@ -172,7 +172,7 @@ Let us take a look at the first few lines of our alignment map
 ```
 </details><p>  
 
-#### Locus discovery:
+### Locus discovery:
 Now that we have an alignment map we are ready to discover unique (i.e. individual) RAD loci. To do this we will use a custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/IdentifyLoci3.pl). The first lines of this script contains important criteria which we will have to set and which will influence our results (i.e. the number loci we end up with).
 
 ```Perl
