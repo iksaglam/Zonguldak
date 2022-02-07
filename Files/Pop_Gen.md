@@ -357,7 +357,7 @@ Next we can use a simple R script ([here](https://github.com/iksaglam/Zonguldak/
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotDiv.R all_pops_diversity.tsv
 ```
-[Tajima's D](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_TajimaD.png)
+![Tajima's D](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_TajimaD.png)
 
 
 ## Population genetic differentiation
@@ -423,5 +423,5 @@ Then we can input this table into and Rscript given [here](https://github.com/ik
 scripts=/egitim/iksaglam/scripts
 Rscript $scripts/plotFst.R all_pops_fst.tsv
 ```
-[Fst](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_Fst.png)
+![Fst](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_Fst.png)
 
