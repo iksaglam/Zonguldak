@@ -5,4 +5,6 @@ This tutorial covers a brief introduction into performing population genetic ana
 - #### **Topic 1:** [RAD loci discovery from raw reads](https://github.com/iksaglam/Zonguldak/blob/main/Files/ID_Loci.md)
 
 - #### **Topic 2:** [Population genetic analyses using RADseq data](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md)
-
+<br/><br/>
+## Event
+"RAD sequencing: from library prep to data analysis”. 8-9 February 2022, at Bülent Ecevit University Farabi Campus, Zonguldak.
