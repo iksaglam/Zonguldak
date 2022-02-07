@@ -27,7 +27,7 @@ ls *.fastq | cut -d'_' -f1-2 > U_OVT.list
 
 #### Qaulity filtering of fastq files:
 
-Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). Here we will be using a custom script but any quality filtering software can be used.
+Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). Here we will be using a custom perl script ([here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/QualityFilter.pl))but any quality filtering software can be used.
 
 ```Bash
 scripts=/egitim/iksaglam/scripts
@@ -66,7 +66,7 @@ AAGAGGAAAAATCAAATGCATGTGAAGGTCGTTTGAGCCTCTAGAGCTATCCGCCTTTTGGATGTCCAATACCACTACGA
 
 
 #### Building a hash table for all reads:
-Next we will use another custom script to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
+Next we will use another custom perl script [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/HashSeqs.pl) to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
 
 ```Bash
 scripts=/egitim/iksaglam/scripts
@@ -173,7 +173,7 @@ Let us take a look at the first few lines of our alignment map
 </details><p>  
 
 #### Locus discovery:
-Now that we have an alignment map we are ready to discover unique (i.e. individual) RAD loci. To do this we will use a custom perl script. The first lines of this script contains important criteria which we will have to set and which will influence our results (i.e. the number loci we end up with).
+Now that we have an alignment map we are ready to discover unique (i.e. individual) RAD loci. To do this we will use a custom perl script ([here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/IdentifyLoci3.pl)). The first lines of this script contains important criteria which we will have to set and which will influence our results (i.e. the number loci we end up with).
 
 ```Perl
 #!/usr/bin/perl
@@ -244,7 +244,7 @@ TATGTAATAACCTACTTCTTTTGGCATTGCTCTAAATCAAATACGAGTTAATTTCAAACCCTCTTCGCATTATACTAAGG
 ```
 Since we allowed more variability within each RAD loci the total number of loci dropped from 63,751 to 48,762. Play around with some of the other parameters to see how they influence your results.
   
-Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and comvert our loci file into a clean looking fasta file.
+Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and comvert our loci file into a clean looking fasta file using the custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/SimplifyLoci2.pl).
   
 ```Bash
 scripts=/egitim/iksaglam/scripts
