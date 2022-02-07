@@ -115,7 +115,7 @@ for i in `cat pop.list`; do grep $i artv.bamlist > ${i}.bamlist; done
 
 ## Genotyping and variant calling
 
-To peform basic population genetic analysis in [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD), we first need to assign genotype probabilities at each site for each individual and determine allele frequencies for each site. The specific option in [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD) for calculating genotype probabilities and determining polymorphic sites is `-doGeno` together with `-doMAF`. When working with low/medium depth data it is always advantegous to work with genotype porbabilities but we can also call genotypes using the `-doPost` option with an appopriate probability cutoff `-postCutoff`. Additionally (or alternatively) we can also create output files in beagle `-doGlf`, vcf `-dovcf` and PLINK `-doPlink` format to have the option to use other NGS analysis toolkits like [PLINK](https://www.cog-genomics.org/plink/2.0/), [GATK](https://gatk.broadinstitute.org/hc/en-us) or [STACKS](https://catchenlab.life.illinois.edu/stacks/) among others.
+To peform basic population genetic analysis in [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD), we first need to assign genotype probabilities at each site for each individual and determine allele frequencies for each site. The specific option in [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD) for calculating genotype probabilities and determining polymorphic sites is `-doGeno` together with `-doMAF`. When working with low/medium depth data it is always advantegous to work with genotype probabilities but we can also call genotypes using the `-doPost` option with an appopriate probability cutoff `-postCutoff`. Additionally (or alternatively) we can also create output files in beagle `-doGlf`, vcf `-dovcf` and PLINK `-doPlink` format to have the option to use other NGS analysis toolkits like [PLINK](https://www.cog-genomics.org/plink/2.0/), [GATK](https://gatk.broadinstitute.org/hc/en-us) or [STACKS](https://catchenlab.life.illinois.edu/stacks/) among others.
 
 ### Basic filtering
 When determining genotype probabilities and polymorphic sites we ideally want to work with only high quality sites. We can do this by filtering out low quality reads, reads with low mapping quality and removing sites where half of the individuals have no data. This can be achieved by setting appropriate parameters to the below options.
@@ -147,7 +147,7 @@ Option | Meaning |
 -SNP_pval 1e-12 | Remove sites with a pvalue larger than 1e-12  |
 -postCutoff 0.85 | Call genotypes with a posterior probability of over 85%  |
 
-Recalling also our choice for data filtering and that we would like to output files in various formats, our final command line would look something like this:
+Recalling  our choice for data filtering and that we would like to output files in various formats, our final command line would look something like this:
 
 ```Bash
 mkdir results_geno
