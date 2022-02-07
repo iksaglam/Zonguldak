@@ -12,7 +12,7 @@ Our goal in this tutorial is to understand the basics of RAD loci discovery from
 #### Data:
 To discover a set of unique RAD loci we will use forward reads from 6 fastq files from the Ovit population of *Ph. uvarovi*. The data can be found here `/egitim/iksaglam/data/uvarovi`. As a first step let us now copy this data into our own directory and list to make sure everything was copied correctly.
 
-```
+```Bash
 cd ~/my_directory/
 cp /egitim/iksaglam/data/uvarovi/*.fastq ./
 ls *.fastq
@@ -20,7 +20,7 @@ ls *.fastq
 
 Let us also make a file listing all individuals for future use
 
-```
+```Bash
 ls *.fastq | cut -d'_' -f1-2 > U_OVT.list
 ```
 
@@ -29,7 +29,7 @@ ls *.fastq | cut -d'_' -f1-2 > U_OVT.list
 
 Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). Here we will be using a custom script but any quality filtering software can be used.
 
-```
+```Bash
 scripts=/egitim/iksaglam/scripts
 for i in `cat U_OVT.list`
 do
@@ -39,7 +39,7 @@ done
 
 We can quickly take a look at on of these files using less.
 
-```
+```Bash
 less U_OVTD04_L80P80.fastq
 ```
 
@@ -68,7 +68,7 @@ AAGAGGAAAAATCAAATGCATGTGAAGGTCGTTTGAGCCTCTAGAGCTATCCGCCTTTTGGATGTCCAATACCACTACGA
 #### Building a hash table for all reads:
 Next we will use another custom script to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
 
-```
+```Bash
 scripts=/egitim/iksaglam/scripts
 for i in `cat U_OVT.list`
 do
@@ -77,7 +77,7 @@ done
 ```
 Let us again take a quick look at on of these files using less.
 
-```
+```Bash
 less U_OVTD04_L80P80.hash
 ```
 
@@ -112,14 +112,14 @@ TCATCTGAGACAACCCACAGAGAGATATCAACTGCTTAGAGAGTAGATCTAACTCTCGGACTCAGAGGGAGTAAGTTGTA
 #### Building a pairwise alignment map between all reads:
 Now we are ready to build our alignment map. For the purposes of this tutorial we will be using the aligner novaalign. Firstly we need to concatenate all files into a single hash file (i.e. fasta file) and index this file for mapping.
 
-```
+```Bash
 cat *.hash > U_OVT.fasta
 novoindex U_OVT.index U_OVT.fasta
 ```
 
 Next we will map our hash file containing all reads (i.e. U_OVT.fasta) back on to its own index. This way we will obtain pairwise alignment statictics between each read in our hash file, essentially giving us an alignment map for all pairwise read comparisons with enough similarity to align. To make sure that novoalign does not report only the best alignments we will be using the "exhaustive" mapping option (-rE) with -t 180 (%67 percent identity). Here we will set -rE to 50 (reports the top 50 alignments) for quick results but feel free to go as high as you want.
   
-```
+```Bash
 novoalign  -rE 50 -t 180 -d U_OVT.index -f U_OVT.fasta > U_OVT.novo
 ```
 
@@ -198,12 +198,12 @@ $max_samples_per_allele = 6; # total number of samples (i.e. individuals) in the
 
 Let us now use the above settings to discover loci 
 
-```
+```Bash
 scripts=/egitim/iksaglam/scripts
 perl $scripts/IdentifyLoci3.pl U_OVT.novo > U_OVT.loci
 ```
 and look at the results
-```  
+```  Bash
 tail U_OVT.loci | less 
 ```  
 
@@ -223,11 +223,11 @@ We can see that we have discovered 63,751 individual RAD loci.
   
 Now let us change $max_alignment_score to 60 (meaning we are allowing two SNPs within each RAD loci) and redo the analaysis
   
-```
+```Bash
 scripts=/egitim/iksaglam/scripts
 perl $scripts/IdentifyLoci3.pl U_OVT.novo > U_OVT_v2.loci
 ```  
-```
+```Bash
 tail U_OVT_v2.loci | less 
 ```    
 ```
@@ -246,12 +246,12 @@ Since we allowed more variability within each RAD loci the total number of loci 
   
 Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and comvert our loci file into a clean looking fasta file.
   
-```
+```Bash
 scripts=/egitim/iksaglam/scripts
 SimplifyLoci2.pl U_OVT.loci | grep _1 -A1 --no-group-separator | sed 's/_1//' > U_OVT_ref.fasta
 ```
 Don't forget to take a look at your nice list of RAD loci!
-```
+```Bash
 less U_OVT_ref.fasta
 ```
 ```
