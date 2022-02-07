@@ -88,7 +88,7 @@ samtools index A_CAMD04_sorted_proper_rmdup.bam
 ```
 For the purposes of this tutorial we are directly removing duplicates `REMOVE_DUPLICATES=True` from our resulting bam files (to primarily save space) but usually we only want to mark our duplicates and not remove them `REMOVE_DUPLICATES=False`.
 
-To view our resuling bam files we can use the following command
+To view our resulting bam files we can use the following command
 ```Bash
 samtools view A_CAMD04_sorted_proper_rmdup.bam | less -S
 ```
