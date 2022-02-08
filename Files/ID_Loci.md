@@ -14,7 +14,7 @@ To discover a set of unique RAD loci we will use forward reads from 6 fastq file
 
 ```Bash
 cd ~/my_directory/
-cp /egitim/iksaglam/data/uvarovi/*.fastq ./
+cp ~/iksaglam/data/uvarovi/*.fastq ./
 ls *.fastq
 ```
 
@@ -30,7 +30,7 @@ ls *.fastq | cut -d'_' -f1-2 > U_OVT.list
 Now let us truncate reads to 80bp and remove low quality reads (i.e. < Q20). We will be using a custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/QualityFilter.pl), but any quality filtering software can be used as well.
 
 ```Bash
-scripts=/egitim/iksaglam/scripts
+scripts=~/iksaglam/scripts
 for i in `cat U_OVT.list`
 do
 perl $scripts/QualityFilter.pl ${i}_R1.fastq > ${i}_L80P80.fastq
@@ -69,7 +69,7 @@ AAGAGGAAAAATCAAATGCATGTGAAGGTCGTTTGAGCCTCTAGAGCTATCCGCCTTTTGGATGTCCAATACCACTACGA
 Next we will use another custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/HashSeqs.pl) to build a hash table in fasta format containing ID and count information for all reads within each fastq file.  
 
 ```Bash
-scripts=/egitim/iksaglam/scripts
+scripts=~/iksaglam/scripts
 for i in `cat U_OVT.list`
 do
 perl $scripts/HashSeqs.pl ${i}_L80P80.fastq ${i} > ${i}_L80P80.hash
@@ -201,7 +201,7 @@ $max_samples_per_allele = 6; # total number of samples (i.e. individuals) in the
 Let us now use the above settings to discover loci 
 
 ```Bash
-scripts=/egitim/iksaglam/scripts
+scripts=~/iksaglam/scripts
 perl $scripts/IdentifyLoci3.pl U_OVT.novo > U_OVT.loci
 ```
 and look at the results
@@ -226,7 +226,7 @@ We can see that we have discovered 63,751 individual RAD loci.
 Now let us change `$max_alignment_score` to `60` (meaning we are allowing two SNPs within each RAD loci) and redo the analysis.
   
 ```Bash
-scripts=/egitim/iksaglam/scripts
+scripts=~/iksaglam/scripts
 perl $scripts/IdentifyLoci3.pl U_OVT.novo > U_OVT_v2.loci
 ```  
 ```Bash
@@ -249,7 +249,7 @@ Since we allowed more variability within each RAD loci the total number of loci 
 Finally let say we are comfortable with U_OVT.loci and these are the loci we want to move forward with. Let us do some cleaning up and convert our loci file into a clean looking fasta file using the custom perl script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/SimplifyLoci2.pl).
   
 ```Bash
-scripts=/egitim/iksaglam/scripts
+scripts=~/iksaglam/scripts
 perl $scripts/SimplifyLoci2.pl U_OVT.loci | grep _1 -A1 --no-group-separator | sed 's/_1//' > U_OVT_ref.fasta
 ```
 Don't forget to take a look at your nice list of RAD loci!
