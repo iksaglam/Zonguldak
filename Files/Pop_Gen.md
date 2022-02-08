@@ -102,7 +102,7 @@ samtools flagstat A_CAMD04_sorted_proper_rmdup.bam
 Instead of aligning each paired read one by one normally we would want to do this in bulk. You can find an example shell script that can do this [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/align_pe_reads.sh). We can use this script to execute the above pipeline and get alignment files for all individuals `artv.list` simultaneously using the following command.
 
 ```Bash
-sbatch align_pe_reads.sh artv.list /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+sbatch ~/iksaglam/scripts/align_pe_reads.sh artv.list ~/iksaglam/ref/uvar_ref_contigs_300.fasta
 ```
 
 Now that we have 60 BAM files at low/medium depth we can create a bamlist for the data set as a whole and for each population to use in downstream analysis in a new directory called `analyses`.
@@ -110,7 +110,7 @@ Now that we have 60 BAM files at low/medium depth we can create a bamlist for th
 ```Bash
 mkdir analyses
 cd analyses
-ls /egitim/iksaglam/alignments/*.sorted_proper_rmdup.bam > artv.bamlist
+ls ~/iksaglam/alignments/*.sorted_proper_rmdup.bam > artv.bamlist
 for i in `cat pop.list`; do grep $i artv.bamlist > ${i}.bamlist; done
 ```
 [Topics](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#topics-to-be-covered)
@@ -153,7 +153,7 @@ Recalling  our choice for data filtering and that we would like to output files 
 
 ```Bash
 mkdir results_geno
-ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
 nInd=$(wc -l artv.bamlist | awk '{print $1}')
 mInd=$((${nInd}/2))
 
@@ -161,7 +161,7 @@ angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -
 ```
 An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_genos.sh) and can be executed as follows:
 ```Bash
-sbatch get_genos.sh artv /egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+sbatch ~/iksaglam/scripts/get_genos.sh artv ~/iksaglam/ref/uvar_ref_contigs_300.fasta
 ```
 
 Take a look at some of the resulting files using less. Can you makes sense of them?
@@ -195,8 +195,7 @@ paste -d' ' FID IID CLUSTER > artv.clst
 ```
 
 ```Bash
-scripts=/egitim/iksaglam/scripts
-Rscript $scripts/plotPCA.R -i results_pca/artv.cov -c 1-2 -a artv.clst -o results_pca/artv_pca_1_2.pdf
+Rscript ~/iksaglam/scripts/plotPCA.R -i results_pca/artv.cov -c 1-2 -a artv.clst -o results_pca/artv_pca_1_2.pdf
 ```
 
 ![PCA](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pca_1_2.png)
@@ -206,7 +205,7 @@ Download the resulting pdf file to your local computer and take a look.
 An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_PCA_Angsd.sh) and can be executed as follows:
 
 ```Bash
-sbatch get_PCA_Angsd.sh artv
+sbatch ~/iksaglam/scripts/get_PCA_Angsd.sh artv
 ```
 [Topics](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#topics-to-be-covered)
 
@@ -234,7 +233,7 @@ done
 An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_admix.sh) and can be executed as follows:
 
 ```Bash
-sbatch get_admix.sh artv 5
+sbatch ~/iksaglam/scripts/get_admix.sh artv 5
 ```
 
 Next, we will take the likelihood value from each run of `NGSadmix` and prepare a [Clumpak](http://clumpak.tau.ac.il/bestK.html) file to determine the most like K based on Evanno's method ([Evanno et al. 2005](https://onlinelibrary.wiley.com/doi/10.1111/j.1365-294X.2005.02553.x)).
@@ -253,8 +252,7 @@ cut -c3-5 artv.list | paste - artv.list > artv.info
 ```
 Now that our info file is ready we can plot our results like below
 ```Bash
-scripts=/egitim/iksaglam/scripts
-Rscript $scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
+Rscript ~/iksaglam/scripts/plotAdmix.R artv_admix3_run1.qopt artv.info
 ```
 ![Admix](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_admix3_run1.qopt.png)
 
@@ -274,7 +272,7 @@ The SFS should be computed for each population separately. Since we have an out 
 ### Calculate SAF file
 ```Bash
 mkdir results_sfs
-ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
 angsd -bam CAM.bamlist -ref $ref -anc $ref -out results_sfs/CAM -GL 1 -doSaf 1 -doCounts 1 -minMapQ 10 -minQ 20
 ```
 
@@ -297,8 +295,7 @@ The first value represent the expected number of sites with derived allele frequ
 
 Lastly we can plot the SFS using a simple R script given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotSFS.R).
 ```Bash
-scripts=/egitim/iksaglam/scripts
-Rscript $scripts/plotSFS.R results_sfs/CAM.sfs CAM 0 results_sfs/CAM.sfs.pdf
+Rscript ~/iksaglam/scripts/plotSFS.R results_sfs/CAM.sfs CAM 0 results_sfs/CAM.sfs.pdf
 ```
 ![SFS](https://github.com/iksaglam/Zonguldak/blob/main/Files/CAM.sfs.png)
 
@@ -307,7 +304,7 @@ Download the resulting pdf file onto your local computer and view!
 Ideally we would of course want to cycle through all populations in parallel. An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_sfs.sh) and can be executed as follows:
 
 ```Bash
-sbatch get_sfs.sh pop.list
+sbatch ~/iksaglam/scripts/get_sfs.sh pop.list
 ```
 [Topics](https://github.com/iksaglam/Zonguldak/blob/main/Files/Pop_Gen.md#topics-to-be-covered)
 
@@ -351,7 +348,7 @@ thetaStat do_stat results_diversity/CAM.thetas.idx -win 50000 -step 10000
 
 As always we would like to run the analysis in paralell for all populations. An example shell script for running the analysis on the cluster and in parallel can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_diversity.sh) and can be executed as follows:
 ```Bash
-sbatch get_diversity.sh pop.list
+sbatch ~/iksaglam/scripts/get_diversity.sh pop.list
 ```
 
 If we wish we can also plot or make a table comparing our results between populations for selected statistics. To do this we would first need to extract the relative columns from each population and write them into a new file. For example let us say we want to compare and plot ThetaW, ThetaPi and Tajima's D estimates between populations. To create such a spreadsheet we could do something like this:
@@ -361,8 +358,7 @@ sed -i 1i'Pop\tRADloci\ttW\ttP\tTajD\tNsites’ all_pops_diversity.tsv
 ```
 Next we can use a simple R script as given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotDiv.R) to plot our results and create a summary table.
 ```Bash
-scripts=/egitim/iksaglam/scripts
-Rscript $scripts/plotDiv.R all_pops_diversity.tsv
+Rscript ~/iksaglam/scripts/plotDiv.R all_pops_diversity.tsv
 ```
 ![Tajima's D](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_TajimaD.png)
 
@@ -412,11 +408,11 @@ As before we can perform all pairwise comparisons in bulk using appropriate shel
 
 2D-SFS between all populations
 ```Bash
-sbatch get_2Dsfs.sh pop.list
+sbatch ~/iksaglam/scripts/get_2Dsfs.sh pop.list
 ```
 Fst between all populations
 ```Bash
-sbatch get_fst.sh pop.list
+sbatch ~/iksaglam/scripts/get_fst.sh pop.list
 ```
 
 Lastly we can plot our results in the form of a heat map illustrating pairwise genetic differentiation (Fst) between populations. To do this first let us make a table summarizing global fst values between each population.
@@ -428,8 +424,7 @@ paste pops fstfile > all_pops_fst.tsv
 ```
 We can then input this table into an Rscript given [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/plotFst.R) and plot a heat map.
 ```Bash
-scripts=/egitim/iksaglam/scripts
-Rscript $scripts/plotFst.R all_pops_fst.tsv
+Rscript ~/iksaglam/scripts/plotFst.R all_pops_fst.tsv
 ```
 ![Fst](https://github.com/iksaglam/Zonguldak/blob/main/Files/artv_pops_Fst.png)
 
