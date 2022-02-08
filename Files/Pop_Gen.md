@@ -217,13 +217,14 @@ To run the analysis we will input our previously generated genotype likelihood f
 
 ```Bash
 mkdir results_admix
+misc=~/bin/angsd/angsd/misc
 x=2
 while [ $x -le 5 ] 
 do
   y=1
   while [ $y -le 10 ]
   do
-  NGSadmix -likes results_geno/artv.beagle.gz -K $x -P 4 -seed $[RANDOM] -o results_admix/artv_admix${x}_run${y}
+  $misc/NGSadmix -likes results_geno/artv.beagle.gz -K $x -P 4 -seed $[RANDOM] -o results_admix/artv_admix${x}_run${y}
   y=$(( $y + 1 )) 
   done 
 x=$(( $x + 1 ))
