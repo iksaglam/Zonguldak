@@ -30,7 +30,7 @@ As a first step let us copy the data into our own directory and list to make sur
 
 ```Bash
 cd ~/my_directory/
-cp /egitim/iksaglam/data/artvinensis/*.fastq.gz ./
+cp ~/iksaglam/data/artvinensis/*.fastq.gz ./
 ls *.fastq.gz
 ```
 
@@ -49,7 +49,7 @@ Like all other alignment tools for genome wide short reads the first step is to 
 
 The basic command for indexing the genome using BWA is:
 ```Bash
-ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
+ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
 bwa index -a bwtsw $ref
 ```
 
@@ -65,9 +65,9 @@ cd alignments/
 Next we will use the BWA-MEM algorithm to align one of our paired-end reads to the reference genome and output results as a [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) (Sequence Alignment/Map Format) file.
 
 ```Bash
-reads=/egitim/iksaglam/data/artvinensis
-ref=/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta
-out=/egitim/iksaglam/alignments
+reads=~/iksaglam/data/artvinensis
+ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
+out=~/iksaglam/alignments
 bwa mem $ref $reads/A_CAMD04_R1.fastq.gz $reads/A_CAMD04_R2.fastq.gz > $out/A_CAMD04.sam
 ```
 As before we can take a look at our SAM files using less.
@@ -84,19 +84,19 @@ To save space we ideally want to transform our SAM file into a binary BAM format
 samtools view -bS A_CAMD04.sam > A_CAMD04.bam
 samtools sort A_CAMD04.bam A_CAMD04_sorted.bam
 samtools view -b -f 0x2 A_CAMD04_sorted.bam > A_CAMD04_sorted_proper.bam
-java -jar /kuacc/apps/picard/2.22.1/picard.jar MarkDuplicates INPUT=A_CAMD04_sorted_proper.bam OUTPUT=A_CAMD04_sorted_proper_rmdup.bam METRICS_FILE=A_CAMD04_metrics.txt VALIDATION_STRINGENCY=LENIENT  REMOVE_DUPLICATES=True
+java -jar ~/bin/picard.jar MarkDuplicates INPUT=A_CAMD04_sorted_proper.bam OUTPUT=A_CAMD04_sorted_proper_rmdup.bam METRICS_FILE=A_CAMD04_metrics.txt VALIDATION_STRINGENCY=LENIENT  REMOVE_DUPLICATES=True
 samtools index A_CAMD04_sorted_proper_rmdup.bam
 ```
 For the purposes of this tutorial we are directly removing duplicates `REMOVE_DUPLICATES=True` from our resulting bam files (to primarily save space) but usually we only want to mark our duplicates and not remove them `REMOVE_DUPLICATES=False`.
 
 To view our resulting bam files we can use the following command
 ```Bash
-samtools view A_CAMD04_sorted_proper_rmdup.bam | less -S
+~/egitim/samtools/samtools-1.9/samtools view A_CAMD04_sorted_proper_rmdup.bam | less -S
 ```
 
 We can also get alignment statistics using samtools flagstat
 ```Bash
-samtools flagstat A_CAMD04_sorted_proper_rmdup.bam
+~/egitim/samtools/samtools-1.9/samtools flagstat A_CAMD04_sorted_proper_rmdup.bam
 ```
 #### Running in parallel or bulk:
 Instead of aligning each paired read one by one normally we would want to do this in bulk. You can find an example shell script that can do this [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/align_pe_reads.sh). We can use this script to execute the above pipeline and get alignment files for all individuals `artv.list` simultaneously using the following command.
@@ -273,18 +273,20 @@ The SFS should be computed for each population separately. Since we have an out 
 ```Bash
 mkdir results_sfs
 ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
-angsd -bam CAM.bamlist -ref $ref -anc $ref -out results_sfs/CAM -GL 1 -doSaf 1 -doCounts 1 -minMapQ 10 -minQ 20
+angsd=~/bin/angsd/angsd
+$angsd -bam CAM.bamlist -ref $ref -anc $ref -out results_sfs/CAM -GL 1 -doSaf 1 -doCounts 1 -minMapQ 10 -minQ 20
 ```
 
 Let us take a look at the out file.
 ```Bash
-realSFS print results_sfs/CAM.saf.idx | less -S
+~/bin/angsd/angsd/misc/realSFS print results_sfs/CAM.saf.idx | less -S
 ```
 These values represent the sample allele frequency likelihoods at each site. So the first value (after the chromosome and position columns) is the likelihood of having 0 copies of the derived allele, the second indicates the probability of having 1 copy and so on. Note that these values are in log format and scaled so that the maximum is 0.
 
 ### Estimate the SFS
 ```Bash
-realSFS results_sfs/CAM.saf.idx -maxIter 100 > results_sfs/CAM.sfs
+misc=~/bin/angsd/angsd/misc
+$misc/realSFS results_sfs/CAM.saf.idx -maxIter 100 > results_sfs/CAM.sfs
 ```
 
 Take a look at the output file:
@@ -315,8 +317,9 @@ Once we have computed the allele frequency posterior probabilities and the SFS f
 Again it is better to calculate such statistics for each population separately. Calculation of diversity statistics for one population can be achieved using the following pipeline.
 ```Bash
 mkdir results_diversity
-realSFS saf2theta results_sfs/CAM.saf.idx -sfs results_sfs/CAM.sfs -outname results_diversity/CAM
-thetaStat do_stat results_diversity/CAM.thetas.idx
+misc=~/bin/angsd/angsd/misc
+$misc/realSFS saf2theta results_sfs/CAM.saf.idx -sfs results_sfs/CAM.sfs -outname results_diversity/CAM
+$misc/thetaStat do_stat results_diversity/CAM.thetas.idx
 ```
 
 This will result in an output file named `CAM.thetas.idx.pestPG`. We can view this file using less.
@@ -369,23 +372,26 @@ Here we are going to estimate allele frequency differentiation between populatio
 
 First we need to estimate the 2D-SFS between these two populations. This can be achieved by using the `realSFS` program. An important issue when doing this is to be sure that we are comparing the exact same sites between populations. Luckily ANGSD does this automatically and considers only a set of overlapping sites.
 ```Bash
-realSFS results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx > results_sfs/CAM.CAY.2dsfs
+misc=~/bin/angsd/angsd/misc
+$misc/realSFS results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx > results_sfs/CAM.CAY.2dsfs
 ```
 
 Next we can use `saf` files of both populations together with the `2D-SFS` to calculate joint allele frequency probabilities at each site.
 ```Bash
 mkdir results_fst
-realSFS fst index results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx -sfs results_sfs/CAM.CAY.2dsfs -fstout results_fst/CAM.CAY
+misc=~/bin/angsd/angsd/misc
+$misc/realSFS fst index results_sfs/CAM.saf.idx results_sfs/CAY.saf.idx -sfs results_sfs/CAM.CAY.2dsfs -fstout results_fst/CAM.CAY
 ```
 This command will create and output file ending with `*.fst.idx` which stores per-site FST indexes. We can take a look at this file as follows.
 ```Bash
-realSFS fst print results_fst/CAM.CAY.fst.idx | less -S
+~/bin/angsd/angsd/misc/realSFS fst print results_fst/CAM.CAY.fst.idx | less -S
 ```
 Here columns are: `RAD_loci, position, (a), (a+b)` values, where FST is defined as `a/(a+b)`. Note that FST on multiple SNPs is calculated as `sum(a)/sum(a+b)`.
 
 Lastly we can calculate the global Fst between these two populations using the following command.
 ```Bash
-realSFS fst stats results_fst/CAM.CAY.fst.idx 2> results_fst/CAM.CAY_global.fst
+~/bin/angsd/angsd/misc
+$misc/realSFS fst stats results_fst/CAM.CAY.fst.idx 2> results_fst/CAM.CAY_global.fst
 ```
 
 We can take a look at this final estimate by using less.
