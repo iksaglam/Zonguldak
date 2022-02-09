@@ -114,13 +114,13 @@ Now we are ready to build our alignment map. For the purposes of this tutorial w
 
 ```Bash
 cat *.hash > U_OVT.fasta
-novoindex U_OVT.index U_OVT.fasta
+~/bin/novoindex U_OVT.index U_OVT.fasta
 ```
 
 Next we will map our hash file containing all reads (i.e. U_OVT.fasta) back on to its own index. This way we will obtain pairwise alignment statictics between each read in our hash file, essentially giving us an alignment map for all pairwise read comparisons with enough similarity to align. To make sure that novoalign does not report only the best alignments we will be using the "exhaustive" mapping option `-rE` with `-t 180` (%67 percent identity). Here we will set `-rE` to `50` (reports the top 50 alignments) for quick results but feel free to go as high as you want.
   
 ```Bash
-novoalign  -rE 50 -t 180 -d U_OVT.index -f U_OVT.fasta > U_OVT.novo
+~/bin/novoalign  -rE 50 -t 180 -d U_OVT.index -f U_OVT.fasta > U_OVT.novo
 ```
 
 Let us take a look at the first few lines of our alignment map
