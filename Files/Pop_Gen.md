@@ -50,7 +50,7 @@ Like all other alignment tools for genome wide short reads the first step is to 
 The basic command for indexing the genome using BWA is:
 ```Bash
 ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
-bwa index -a bwtsw $ref
+~/bwa/bwa index -a bwtsw $ref
 ```
 
 This will result in several indexes including the BWT index `/egitim/iksaglam/ref/uvar_ref_contigs_300.fasta.bwt` which the alignments will be based on. The creation of the index only needs to be performed once and does not have to be recreated for every alignment job.
@@ -68,7 +68,7 @@ Next we will use the BWA-MEM algorithm to align one of our paired-end reads to t
 reads=~/iksaglam/data/artvinensis
 ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
 out=~/iksaglam/alignments
-bwa mem $ref $reads/A_CAMD04_R1.fastq.gz $reads/A_CAMD04_R2.fastq.gz > $out/A_CAMD04.sam
+~/bwa/bwa mem $ref $reads/A_CAMD04_R1.fastq.gz $reads/A_CAMD04_R2.fastq.gz > $out/A_CAMD04.sam
 ```
 As before we can take a look at our SAM files using less.
 
@@ -81,11 +81,12 @@ less -S A_CAMD04_R1.sam
 To save space we ideally want to transform our SAM file into a binary BAM format and sort by coordinates. Next when working with reduced representation libraries like RADseq data it is advantegous to keep only properly paired individuals. Finally we want to remove/mark PCR duplicates using [picard-tools](https://broadinstitute.github.io/picard/), so they do not bias variant calling and genotyping and index our final BAM file.
 
 ```Bash
-samtools view -bS A_CAMD04.sam > A_CAMD04.bam
-samtools sort A_CAMD04.bam A_CAMD04_sorted.bam
-samtools view -b -f 0x2 A_CAMD04_sorted.bam > A_CAMD04_sorted_proper.bam
+samtools=~/samtools/samtools-1.9/samtools
+$samtools view -bS A_CAMD04.sam > A_CAMD04.bam
+$samtools sort A_CAMD04.bam A_CAMD04_sorted.bam
+$samtools view -b -f 0x2 A_CAMD04_sorted.bam > A_CAMD04_sorted_proper.bam
 java -jar ~/bin/picard.jar MarkDuplicates INPUT=A_CAMD04_sorted_proper.bam OUTPUT=A_CAMD04_sorted_proper_rmdup.bam METRICS_FILE=A_CAMD04_metrics.txt VALIDATION_STRINGENCY=LENIENT  REMOVE_DUPLICATES=True
-samtools index A_CAMD04_sorted_proper_rmdup.bam
+$samtools index A_CAMD04_sorted_proper_rmdup.bam
 ```
 For the purposes of this tutorial we are directly removing duplicates `REMOVE_DUPLICATES=True` from our resulting bam files (to primarily save space) but usually we only want to mark our duplicates and not remove them `REMOVE_DUPLICATES=False`.
 
@@ -153,11 +154,12 @@ Recalling  our choice for data filtering and that we would like to output files 
 
 ```Bash
 mkdir results_geno
+angsd=~/bin/angsd/angsd
 ref=~/iksaglam/ref/uvar_ref_contigs_300.fasta
 nInd=$(wc -l artv.bamlist | awk '{print $1}')
 mInd=$((${nInd}/2))
 
-angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
+$angsd -bam artv.bamlist -ref $ref -out results_geno/artv -GL 1 -doMajorMinor 1 -doMaf 1 -doGlf 2 -doGeno 5 -dovcf 1 -doPlink 2 -doPost 1 -postCutoff 0.85 -minMapQ 10 -minQ 20 -minInd $mInd -SNP_pval 1e-12 -minMaf 0.05 -nThreads 2
 ```
 An example shell script for running the analysis on the cluster can be found [here](https://github.com/iksaglam/Zonguldak/blob/main/Scripts/get_genos.sh) and can be executed as follows:
 ```Bash
